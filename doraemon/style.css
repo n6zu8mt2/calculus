@@ -1,0 +1,242 @@
+/* 基本的なスタイル */
+body {
+    font-family: 'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
+    line-height: 1.8;
+    color: #333;
+    background-color: #f9f8f6;
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    border-bottom: 3px double #c0a080;
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #5d4037;
+}
+
+h2 {
+    font-size: 1.8em;
+    color: #5d4037;
+    border-left: 5px solid #c0a080;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+section {
+    margin-bottom: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+/* イントロ */
+.conditions ul {
+    list-style: none;
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background: #fafafa;
+}
+
+.conditions li strong {
+    color: #a1887f;
+    display: inline-block;
+    width: 180px;
+}
+
+/* シミュレーション */
+#startButton {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 20px auto;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff5722;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#startButton:hover {
+    background-color: #e64a19;
+    transform: scale(1.05);
+}
+
+#result p {
+    font-size: 1.2em;
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+#result span {
+    font-weight: bold;
+    color: #d84315;
+}
+
+#comparison {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#scale-container {
+    padding: 20px;
+    border: 2px dashed #c0a080;
+    border-radius: 10px;
+    background: #fffaf0;
+}
+
+#scale-image {
+    max-width: 200px;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+#scale-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #5d4037;
+}
+
+/* 結論 */
+#conclusion {
+    background-color: #3a2e29;
+    color: #fff;
+    text-align: center;
+}
+
+.final-answer {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.final-answer span {
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffab40;
+    display: block;
+}
+
+#final-details {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+/* 解説 */
+#explanation ol {
+    padding-left: 20px;
+}
+
+#explanation li {
+    margin-bottom: 15px;
+}
+
+/* 栗まんじゅうが宇宙を埋め尽くすアニメーション */
+#kurimanju-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.kurimanju {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-image: url('images/manju.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* シミュレーション */
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+#startButton, #pauseButton, #resumeButton {
+    display: block;
+    width: 60%;
+    max-width: 240px;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#startButton {
+    background-color: #ff5722; /* オレンジ */
+}
+#startButton:hover {
+    background-color: #e64a19;
+    transform: scale(1.05);
+}
+
+#pauseButton {
+    background-color: #fbc02d; /* 黄色 */
+}
+#pauseButton:hover {
+    background-color: #f9a825;
+}
+
+#resumeButton {
+    background-color: #4caf50; /* 緑 */
+}
+#resumeButton:hover {
+    background-color: #43a047;
+}
+
+
+#result p {
+    font-size: 1.2em;
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+/* (省略) この後のスタイルはそのまま */

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栗まんじゅうで宇宙を埋め尽くそう！ | バイバイン・シミュレーター</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // MathJaxのグローバル設定
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <header>
+            <h1>栗まんじゅうで宇宙を埋め尽くそう！</h1>
+            <p>〜ドラえもんの「バイバイン」シミュレーター〜</p>
+        </header>
+
+<main>
+            <section id="intro">
+                <h2>もしも、たった1個の栗まんじゅうに「バイバイン」を使ったら…？</h2>
+                <p>「バイバイン」は、5分でなんでも2倍に増やしてしまう恐るべきひみつ道具。たった1個の栗まんじゅうから始まった物語が、やがて宇宙的スケールの結末を迎えるまでを体感してみましょう。</p>
+                <div class="conditions">
+                    <h3>前提条件</h3>
+                    <ul>
+                        <li><strong>栗まんじゅうの体積:</strong> 100 cm³ ($1.0 \times 10^{-4} \ m^3$)</li>
+                        <li><strong>宇宙の体積:</strong> $4.0 \times 10^{80} \ m^3$</li>
+                        <li><strong>増える速さ:</strong> 5分ごとに2倍</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="simulation">
+                <h2>シミュレーション開始！</h2>
+                <div id="controls">
+                    <button id="startButton">バイバインをかける！</button>
+                    <button id="pauseButton" class="hidden">一時停止</button>
+                    <button id="resumeButton" class="hidden">再開</button>
+                </div>
+                <div id="result" class="hidden">
+                    <p>経過時間: <span id="time">0</span></p>
+                    <p>栗まんじゅうの数: <span id="count">1 個</span></p>
+                    <p>総体積: <span id="volume">1.00 × 10<sup>-4</sup> m³</span></p>
+                    <div id="comparison">
+                        <h3>これは、およそ…</h3>
+                        <div id="scale-container">
+                            <img id="scale-image" src="images/manju.png" alt="栗まんじゅう">
+                            <p id="scale-text">栗まんじゅう1個ぶん</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="conclusion" class="hidden">
+                <h2>宇宙が、栗まんじゅうで満たされました…！</h2>
+                <p class="final-answer">栗まんじゅうが宇宙を埋め尽くすのにかかった時間は… 約 <span id="final-time"></span> 時間！</p>
+                <div id="final-details">
+                    <p>最終的な分裂回数: <span id="final-n"></span> 回</p>
+                    <p>最終的な栗まんじゅうの数: $2^{<span id="final-n-exp"></span>}$ 個 (約 <span id="final-count"></span> 個)</p>
+                    <p>最終的な総体積: 約 <span id="final-volume"></span> m³</p>
+                </div>
+            </section>
+
+            <section id="explanation">
+                <h2>なぜこうなるの？計算の仕組み 👨‍🏫</h2>
+                <p>一見、途方もない話に聞こえますが、「指数関数的な増加」の力を使えば、計算することができます。</p>
+                <ol>
+                    <li>栗まんじゅうの総体積が宇宙の体積を超える瞬間を探します。<br>
+                       $$(栗まんじゅう1個の体積) \times (栗まんじゅうの数) \geqq (宇宙の体積)$$
+                    </li>
+                    <li>栗まんじゅうは5分ごとに2倍になるので、n回目の分裂後の数は $2^n$ 個です。体積を $m^3$ で揃えて式を立てます。<br>
+                       $$1.0 \times 10^{-4} \times 2^n \geqq 4.0 \times 10^{80}$$
+                    </li>
+                    <li>この不等式を解いて、必要な分裂回数 $n$ を求めます。<br>
+                       $$2^n \geqq 4.0 \times 10^{84}$$
+                       両辺の常用対数（$\log_{10}$）をとると、<br>
+                       $$\log_{10}(2^n) \geqq \log_{10}(4.0 \times 10^{84})$$
+                       $$n \times \log_{10}(2) \geqq \log_{10}(4) + \log_{10}(10^{84})$$
+                       ここで $\log_{10}(2) \approx 0.3010$, $\log_{10}(4) \approx 0.6020$ なので、<br>
+                       $$0.3010n \geqq 0.6020 + 84$$
+                       $$0.3010n \geqq 84.6020$$
+                       $$n \geqq \frac{84.6020}{0.3010} \approx 281.07$$
+                    </li>
+                    <li>$n$ は分裂回数なので整数です。つまり、**282回**の分裂が終わった時点で宇宙の体積を超えます。</li>
+                    <li>かかる時間は、1回の分裂に5分なので、<br>
+                       $$282回 \times 5分 = 1410分$$
+                       これを時間に直すと、$1410 \div 60 = 23.5$時間となります。
+                    </li>
+                </ol>
+                <p>このように、最初はごく僅かな増加でも、回数を重ねるごとに爆発的に増えていくのが「指数関数」の特徴です。このシミュレーションは、その恐ろしさと面白さを体感させてくれます。</p>
+            </section>
+        </main>
+    </div>
+    <div id="kurimanju-rain"></div>
+    <script src="script.js"></script>
+</body>
+</html>
