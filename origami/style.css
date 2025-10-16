@@ -1,0 +1,175 @@
+/* 基本的なスタイル */
+body {
+    font-family: 'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
+    line-height: 1.8;
+    color: #333;
+    background-color: #f4f8ff;
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    border-bottom: 3px double #4a90e2;
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #0d47a1;
+}
+
+h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+section {
+    margin-bottom: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+/* イントロ */
+.conditions ul {
+    list-style: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.conditions li strong {
+    color: #1565c0;
+    display: inline-block;
+    width: 120px;
+}
+
+/* シミュレーション */
+#paper-visual {
+    height: 50px;
+    background: #e3f2fd;
+    margin: 20px auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#folded-paper {
+    width: 100px;
+    height: 1px;
+    background: #2196f3;
+    transition: height 0.3s ease-out;
+}
+
+#controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+#foldButton, #resetButton {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#foldButton {
+    background-color: #1e88e5;
+}
+#foldButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+}
+#foldButton:disabled {
+    background-color: #90a4ae;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+#resetButton {
+    background-color: #f44336;
+}
+#resetButton:hover {
+    background-color: #d32f2f;
+}
+
+#result p {
+    font-size: 1.2em;
+    background: #f1f8ff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#result span {
+    font-weight: bold;
+    color: #0d47a1;
+}
+
+#comparison {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#scale-container {
+    padding: 20px;
+    border: 2px dashed #4a90e2;
+    border-radius: 10px;
+    background: #f4f8ff;
+}
+
+#scale-image {
+    max-width: 200px;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+#scale-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #0d47a1;
+}
+
+/* 結論 */
+#conclusion {
+    background-color: #0d47a1;
+    color: #fff;
+    text-align: center;
+}
+
+.final-answer span {
+    font-size: 2em;
+    font-weight: bold;
+    color: #bbdefb;
+}
+
+#final-details {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 5px;
+}
