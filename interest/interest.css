@@ -1,0 +1,240 @@
+/* common.css の .container h2 のスタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 解説セクションのスタイル */
+#explanation {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+
+#explanation h3 {
+    font-size: 1.3em;
+    color: #5d4037;
+    border-bottom: 2px solid #c0a080;
+    padding-bottom: 5px;
+    margin-top: 25px;
+}
+#explanation h4 {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 15px;
+}
+
+#explanation p {
+    font-size: 1.05em;
+}
+
+/* 数式を中央揃え */
+#explanation .mjx-chtml {
+    text-align: center;
+    margin: 1.5em 0;
+}
+
+/* コントロールセクション */
+#controls {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px; /* h2 との間隔 */
+}
+
+.controls-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.param-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.param-group label {
+    font-weight: bold;
+    color: #0d47a1;
+    margin-bottom: 5px;
+}
+
+.param-group input[type="number"] {
+    font-size: 1.1em;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.param-group.interest-type label {
+    font-weight: normal;
+    color: #333;
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 0;
+}
+
+.param-group small {
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 5px;
+}
+
+#calculateButton {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto 0 auto;
+    padding: 12px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #1e88e5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+#calculateButton:hover {
+    background-color: #1565c0;
+}
+
+/* 結果セクション */
+.hidden {
+    display: none;
+}
+
+/* グラフホルダー */
+#graph-holder {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ▼▼▼ テーブル (枠線を追加) ▼▼▼ */
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+#results-table {
+    width: 100%;
+    border-collapse: collapse; /* 枠線を1本に */
+}
+
+#results-table th, #results-table td {
+    padding: 10px 12px;
+    text-align: right;
+    border: 1px solid #ddd; /* ▼ 枠線を追加 ▼ */
+}
+
+#results-table th {
+    background-color: #f4f8ff;
+    color: #0d47a1;
+    position: sticky;
+    top: 0;
+}
+
+#results-table td:first-child, #results-table th:first-child {
+    text-align: center;
+    font-weight: bold;
+}
+
+#results-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+/* ▲▲▲ テーブルここまで ▲▲▲ */
+
+
+/* ▼▼▼ 2つの新しいセクションのスタイル ▼▼▼ */
+#continuous-calc,
+#rule-72-calc {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+}
+
+/* 72の法則セクションのスタイル */
+#rule-72-calc h4 {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 15px;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 3px;
+}
+#rule-72-calc ul {
+    list-style: disc;
+    padding-left: 25px;
+}
+#rule-72-calc li {
+    font-size: 1em;
+    font-weight: normal;
+    margin-bottom: 8px;
+    line-height: 1.7;
+}
+#rule-72-calc p { /* 導出の<p> */
+    font-size: 1em;
+    font-weight: normal;
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    line-height: 1.8;
+}
+/* 最初のpタグ（計算結果）は太字に */
+#rule-72-calc p:first-of-type {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.7;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+#rule-72-calc .mjx-chtml { /* 導出の数式 */
+    text-align: center;
+    margin: 1em 0;
+}
+
+/* 連続複利セクションのスタイル */
+#continuous-calc p {
+    font-size: 1.05em;
+    line-height: 1.8;
+}
+#continuous-calc ul {
+    list-style: none;
+    padding-left: 0;
+}
+#continuous-calc li {
+    font-size: 1.1em;
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+#continuous-calc li strong {
+    display: inline-block;
+    width: 150px;
+    color: #0d47a1;
+}
+#continuous-calc li.limit {
+    background-color: #e3f2fd;
+    font-weight: bold;
+}
+/* ▲▲▲ 追加機能セクションここまで ▲▲▲ */

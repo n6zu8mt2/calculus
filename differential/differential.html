@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運動と微分 | 微分の定義シミュレーター</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="differential.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="main-content">
+            <div class="header">
+                <h1>物体の運動と微分の定義</h1>
+                <p>〜「瞬間の速度」を視覚的に理解する〜</p>
+            </div>
+
+            <main>
+                <section id="intro">
+                    <h2>「瞬間の速度」はどうやって求めるの？</h2>
+                    <p>
+                        微分とは、「瞬間の変化の割合」を求める操作です。物体の運動で言えば、「瞬間の速度」にあたります。
+                        ここでは、物体の「位置 $x$」が「時間 $t$」の関数 $x(t)$ として与えられる様々な運動モデルを例に、微分の定義を体感してみましょう。
+                    </p>
+                </section>
+
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    <p>運動モデルを選び、パラメータ（初速、加速度など）を指定して「再生」ボタンを押してみましょう。</p>
+                    
+                    <div class="controls-container">
+                        <div class="slider-group">
+                            <label for="functionSelector">運動のモデル $x(t)$ を選ぶ:</label>
+                            <select id="functionSelector">
+                                <option value="const_accel">x(t) = ½at² + v₀t + x₀ (等加速度運動)</option>
+                                <option value="shm">x(t) = A sin(ωt + φ₀) + x₀ (単振動)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="param-inputs">
+                            <div id="const_accel-params" class="param-group">
+                                <label>加速度 $a$: <input type="number" id="a_a" value="2" step="0.1"></label>
+                                <label>初速度 $v_0$: <input type="number" id="a_v0" value="-5" step="0.1"></label>
+                                <label>初期位置 $x_0$: <input type="number" id="a_x0" value="10" step="1"></label>
+                            </div>
+                            <div id="shm-params" class="param-group hidden">
+                                <label>振幅 $A$: <input type="number" id="shm_A" value="10" step="1"></label>
+                                <label>角速度 $\omega$: <input type="number" id="shm_w" value="1" step="0.1"></label>
+                                <label>初期位相 $\phi_0$: <input type="number" id="shm_phi" value="0" step="0.1"></label>
+                                <label>平衡点の位置 $x_0$: <input type="number" id="shm_x0" value="0" step="1"></label>
+                            </div>
+                        </div>
+
+                        <div class="slider-group time-control">
+                            <label for="timeSlider">時刻 $t$:</label>
+                            <button id="playPauseButton">再生</button>
+                            <input type="range" id="timeSlider" min="0" max="10" value="0" step="0.05">
+                            <span id="timeValue">t = 0.00</span>
+                        </div>
+                        
+                        <button id="calculateDeltaButton">平均の速度を計算する</button>
+
+                        <div class="slider-group dt-control hidden">
+                            <label for="dtSlider">時間差 $\Delta t$:</label>
+                            <input type="range" id="dtSlider" min="0.05" max="3" value="2" step="0.05">
+                            <span id="dtValue">Δt = 2.00</span>
+                        </div>
+                    </div>
+                    
+                    <h3>アニメーション: 時刻 $t$ での物体の位置</h3>
+                    <div id="animation-holder"></div>
+
+                    <h3>グラフ: 時間 $t$ と 位置 $x(t)$ の関係</h3>
+                    <div id="graph-holder"></div>
+                    <div id="result">
+                        <p id="avgVelocityBox" class="result-box average hidden">
+                            <b>平均の速度</b> ( $t$ から $t + $ <span id="dtDisplay" class="math-value">2.00</span> まで) <br>
+                            $\Delta x = x(t+\Delta t) - x(t) = $ <span id="deltaX" class="math-value">0.00</span><br>
+                            <span class="math-formula">$\displaystyle \frac{\Delta x}{\Delta t} = $</span> <span id="avgVelocity" class="math-value">0.00</span>
+                        </p>
+                        <p class="result-box instantaneous">
+                            <b>瞬間の速度</b> ( $t$ において) <br>
+                            <span class="math-formula">$\displaystyle v(t) = \lim_{\Delta t \to 0} \frac{\Delta x}{\Delta t} = $</span> <span id="instVelocity" class="math-value">0.00</span>
+                        </p>
+                    </div>
+                </section>
+
+                <section id="explanation">
+                    <h2>計算の仕組み 👨‍🏫</h2>
+                    <p>
+                        「平均の速度」は $\displaystyle \frac{x(t+\Delta t) - x(t)}{\Delta t}$ で計算される2点間の傾き（赤い線）です。<br>
+                        「瞬間の速度」は、$\Delta t \to 0$ の極限をとったもの（微分）で、接線の傾き（青い線） $v(t)$ となります。
+                    </p>
+                    <div id="explanation-details">
+                        </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script src="differential.js"></script>
+</body>
+</html>

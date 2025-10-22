@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リボ払いシミュレーター</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="revo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="main-content">
+            <div class="header">
+                <h1>リボ払いシミュレーター</h1>
+                <p>〜終わらない返済の恐怖を体感する〜</p>
+            </div>
+
+            <main>                
+                <section id="controls">
+                    <h2>シミュレーション条件</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="totalDebt">借入総額（円）:</label>
+                            <input type="number" id="totalDebt" value="500000" step="10000">
+                        </div>
+                        <div class="param-group">
+                            <label for="apr">実質年率（％）:</label>
+                            <input type="number" id="apr" value="15.0" step="0.1">
+                        </div>
+                        <div class="param-group">
+                            <label for="monthlyPayment">毎月の返済額（円）:</label>
+                            <input type="number" id="monthlyPayment" value="10000" step="1000">
+                        </div>
+                        <div class="param-group">
+                            <label for="additionalSpending">毎月の追加利用額（円）:</label>
+                            <input type="number" id="additionalSpending" value="1000" step="1000">
+                            <small>（返済中も使い続ける場合）</small>
+                        </div>
+                        <div class="param-group">
+                            <label for="maxMonths">シミュレーション期間（ヶ月）:</label>
+                            <input type="number" id="maxMonths" value="120" step="12">
+                            <small>（最大10年）</small>
+                        </div>
+                    </div>
+                    <button id="calculateButton">計算する</button>
+                </section>
+
+
+                <section id="results" class="hidden">
+                    <h2>シミュレーション結果</h2>
+                    
+                    <div id="summary">
+                        </div>
+
+                    <h2>返済グラフ</h2>
+                    <div id="graph-holder"></div>
+
+                    <h2>返済スケジュール（月ごと）</h2>
+                    <div class="table-container">
+                        <table id="results-table">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="explanation">
+                    <h2>リボ払いの計算の仕組み 👨‍🏫</h2>
+                    <p>
+                        リボ払い（リボルビング払い）は、毎月の支払額が一定になる返済方式です。一見便利に見えますが、高い金利が「残高全体」にかかり続けるため、返済が長期化しやすい危険性を持ちます。
+                    </p>
+                    <p>
+                        計算は以下のステップで行われます。
+                        $R$ を実質年率（例: 15%なら $0.15$）、$B$ を現在の借入残高、$P$ を毎月の返済額とします。
+                    </p>
+                    <ol>
+                        <li>
+                            <b>月々の利息の計算</b><br>
+                            まず、その月に発生する利息が計算されます。
+                            $$
+                            \text{月々の利息} = B \times \left( \frac{R}{12} \right)
+                            $$
+                        </li>
+                        <li>
+                            <b>元金返済額の計算</b><br>
+                            毎月の返済額 $P$ から、まず(1)の利息が差し引かれます。残った金額だけが、元金（借金そのもの）の返済に充てられます。
+                            $$
+                            \text{元金返済額} = P - \text{月々の利息}
+                            $$
+                        </li>
+                        <li>
+                            <b>残高の更新</b><br>
+                            翌月の残高は、(2)の元金返済額だけが減った金額になります。
+                            $$
+                            \text{翌月の残高} = B - \text{元金返済額}
+                            $$
+                        </li>
+                    </ol>
+                    <div class="warning-box">
+                        <strong>リボ払いの罠:</strong> もし「月々の利息」が「毎月の返済額 $P$」を上回った場合、元金返済額はマイナスになります。
+                        これは、<b>毎月返済しているにもかかわらず、元金（借金）が増え続ける</b>ことを意味します。
+                        シミュレーターでこの状態をぜひ体感してみてください。
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <script src="revo.js"></script>
+</body>
+</html>

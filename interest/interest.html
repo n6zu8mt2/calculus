@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>単利・複利シミュレーター</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="interest.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="main-content">
+            <div class="header">
+                <h1>単利・複利シミュレーター</h1>
+                <p>〜利息の力を視覚的に理解する〜</p>
+            </div>
+
+            <main>
+
+                
+                <section id="controls">
+                    <h2>シミュレーション条件</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="initialAmount">最初に預ける金額（万円）:</label>
+                            <input type="number" id="initialAmount" value="100" step="1">
+                        </div>
+                        <div class="param-group">
+                            <label for="annualRate">年利（％）:</label>
+                            <input type="number" id="annualRate" value="1" step="0.1">
+                        </div>
+                        <div class="param-group">
+                            <label for="years">預ける年数（年）:</label>
+                            <input type="number" id="years" value="20" step="1">
+                        </div>
+                        <div class="param-group interest-type">
+                            <label>利息のタイプ:</label>
+                            <label><input type="radio" name="interestType" value="simple" checked> 単利</label>
+                            <label><input type="radio" name="interestType" value="compound"> 複利</label>
+                        </div>
+                        <div class="param-group" id="frequency-group">
+                            <label for="compoundingFrequency">利息が発生する頻度（年に $n$ 回）:</label>
+                            <input type="number" id="compoundingFrequency" value="1" step="1" min="1">
+                            <small>（単利の場合は年に1回固定です）</small>
+                        </div>
+                    </div>
+                    <button id="calculateButton">計算する</button>
+                </section>
+
+                <section id="results" class="hidden">
+                    <h2>シミュレーション結果</h2>
+                    
+                    <h2>金額の推移グラフ</h2>
+                    <div id="graph-holder"></div>
+
+                    <h2>年ごとの詳細</h2>
+                    <div class="table-container">
+                        <table id="results-table">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="explanation">
+                    <h2>計算の仕組み 👨‍🏫</h2>
+                    <p>
+                        シミュレーターで使われている計算式は以下の通りです。
+                        $A_0$ を「最初に預ける金額（元金）」、 $r$ を「年利（例: 1%なら0.01）」、$N$ を「預ける年数」とします。
+                    </p>
+                    
+                    <h3>単利 (Simple Interest)</h3>
+                    <p>
+                        単利は、利息が常に**最初の元金 $A_0$ に対してのみ**計算される方式です。
+                        毎年 $A_0 \times r$ の利息が固定で加算されていきます。
+                        $N$ 年後の貯金残高 $A_N$ は以下の式で計算されます。
+                    </p>
+                    $$
+                    A_N = A_0 + (A_0 \times r \times N) = A_0 (1 + rN)
+                    $$
+                    
+                    <h3>複利 (Compound Interest)</h3>
+                    <p>
+                        複利は、発生した利息を**元金に組み入れ、その新しい合計額に対して次の利息が計算される**方式です。
+                    </p>
+                    
+                    <h4>1. 年に1回 ($n=1$) 利息が発生する場合</h4>
+                    <p>
+                        最もシンプルな複利です。$N$ 年後の貯金残高 $A_N$ は、$N$ 回利息が計算されるため、以下のようになります。
+                    </p>
+                    $$
+                    A_N = A_0 (1 + r)^N
+                    $$
+
+                    <h4>2. 年に $n$ 回 利息が発生する場合（一般のケース）</h4>
+                    <p>
+                        「年に $n$ 回」利息が発生する場合（例: 半年ごとなら $n=2$、毎月なら $n=12$）、1回あたりの利率は $\frac{r}{n}$ となります。
+                        $N$ 年間での利息発生回数は $n \times N$ 回となります。
+                        $N$ 年後の貯金残高 $A_N$ は以下の式で計算されます。
+                    </p>
+                    $$
+                    A_N = A_0 \left(1 + \frac{r}{n}\right)^{n \times N}
+                    $$
+                    <p>
+                        シミュレーターで $n$ の値（利息が発生する頻度）を大きくすると、同じ年利でも貯金残高がわずかに増えていくことが確認できます。
+                    </p>
+                </section>
+
+                <section id="continuous-calc" class="hidden">
+                    <h2>連続複利 ( $n \to \infty$ の極限) と 自然対数の底 $e \approx 2.718$ </h2>
+                    <p>
+                        利息の発生頻度 $n$ を無限に大きくした場合、1年後の金額は $A_0 \times \left(1 + \frac{r}{n}\right)^{n}$ ではなく、 $A_0 \times e^r$ に収束します。
+                        （ $e \approx 2.718$ は自然対数の底）<br>
+                        $n$ を増やした場合の1年後の金額と、その極限値を比較してみましょう。
+                    </p>
+                    <ul id="e-limit-list">
+                        </ul>
+                </section>
+
+                <section id="rule-72-calc" class="hidden">
+                    <h2>72の法則 (元金が2倍になる年数)</h2>
+                    <div id="rule-72-content">
+                        </div>
+                </section>
+                
+                </main>
+        </div>
+    </div>
+    
+    <script src="interest.js"></script>
+</body>
+</html>

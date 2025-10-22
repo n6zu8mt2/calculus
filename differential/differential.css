@@ -1,0 +1,196 @@
+/* シミュレーションセクションのスタイル */
+#simulation {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* p5.jsキャンバスのホルダー */
+#graph-holder, #animation-holder {
+    margin: 10px auto;
+    width: 90%;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#animation-holder {
+    height: 100px; /* 目盛りとラベルのため高さを増やす */
+    background-color: #fff;
+}
+
+/* コントロール全体 */
+.controls-container {
+    padding: 15px;
+    background: #eceff1;
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.slider-group {
+    margin-bottom: 15px;
+}
+
+.slider-group label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 時刻スライダーと再生ボタン */
+.time-control {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.time-control label { margin-bottom: 0; }
+.time-control input[type="range"] {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Δt スライダー */
+.dt-control {
+    background: #fff;
+    border: 1px solid #c0ddee;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+}
+.dt-control input[type="range"] {
+    width: 80%;
+}
+
+.slider-group span {
+    font-weight: bold;
+    color: #0d47a1;
+    min-width: 80px;
+}
+
+/* 再生ボタン */
+#playPauseButton {
+    padding: 8px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4caf50; /* 緑 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+#playPauseButton.playing {
+    background-color: #f44336; /* 赤 */
+}
+#playPauseButton:hover { opacity: 0.9; }
+
+/* Δt計算ボタン */
+#calculateDeltaButton {
+    padding: 10px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #1e88e5; /* 青 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+#calculateDeltaButton.active {
+    background-color: #e53935; /* 赤 */
+}
+#calculateDeltaButton:hover { opacity: 0.9; }
+
+
+/* パラメータ入力欄 */
+#param-inputs {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+}
+.param-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+.param-group label {
+    font-weight: normal;
+    font-size: 0.9em;
+    margin-bottom: 0;
+}
+.param-group input[type="number"] {
+    width: 70px;
+    font-size: 1em;
+    padding: 5px;
+}
+.hidden {
+    display: none;
+}
+
+/* ▼▼▼ 結果表示 (スタイル修正) ▼▼▼ */
+#result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 0 10px;
+}
+.result-box {
+    flex: 1;
+    min-width: 250px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 1.1em;
+    line-height: 1.8; /* 行間を調整 */
+}
+.result-box b {
+    display: block; /* タイトルをブロック要素に */
+    margin-bottom: 5px;
+}
+
+/* 数式と値のスタイル */
+.result-box .math-formula {
+    font-size: 1.5em; /* 数式を大きく */
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.result-box .math-value {
+    font-size: 1.7em; /* 数値を大きく */
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* 色分け */
+.result-box span#dtDisplay { 
+    font-size: 1.1em; /* Δtの値は小さめ */
+    font-weight: bold;
+    color: #0d47a1; 
+    vertical-align: middle;
+}
+.result-box span#deltaX { color: #333; }
+.average span#avgVelocity { color: #e53935; } /* 赤 */
+.instantaneous span#instVelocity { color: #1e88e5; } /* 青 */
+/* ▲▲▲ スタイル修正ここまで ▲▲▲ */
+
+
+/* 解説欄 */
+#explanation-details {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.1px 20px;
+    margin-top: 20px;
+}
+#explanation-details h3 {
+    color: #5d4037;
+}
