@@ -98,3 +98,86 @@ a:hover {
 .container p {
     padding-left: 10px;
 }
+
+
+/* --- 2カラムレイアウト --- */
+.page-wrapper {
+    display: flex; /* Make it a flex container */
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+/* --- サイドバー --- */
+/* Style loaded from sidebar.html */
+.sidebar {
+    width: 280px; /* Sidebar width */
+    background-color: #e3f2fd; /* Sidebar background color */
+    padding: 20px;
+    border-right: 1px solid #bbdefb;
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    height: 100vh; /* Make sidebar full height */
+    position: sticky; /* Keep sidebar visible when scrolling */
+    top: 0;
+    overflow-y: auto; /* Allow sidebar content to scroll if needed */
+}
+
+.sidebar h2 {
+    font-size: 1.5em;
+    border-bottom: 2px solid #90caf9;
+    padding-bottom: 10px;
+    margin-top: 0;
+    color: #0d47a1; /* Match main content h2 color */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li a {
+    display: block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+    color: #1e88e5; /* Link color */
+    text-decoration: none;
+}
+
+.sidebar li a:hover {
+    background-color: #bbdefb;
+    text-decoration: none;
+}
+
+
+/* --- メインコンテンツ --- */
+.main-content {
+    flex-grow: 1; /* Allow main content to take remaining space */
+    padding: 20px 40px;
+    /* Add min-width to prevent excessive squeezing if needed */
+    min-width: 0; /* Prevents flexbox overflow issues */
+}
+
+/* Adjust header and main h2 if needed, these might already exist */
+.main-content .header {
+    text-align: center;
+    border-bottom: 3px double #4a90e2;
+    margin-bottom: 40px;
+}
+
+.main-content .header h1 {
+    font-size: 2.5em;
+    margin: 0;
+    padding-bottom: 10px;
+    color: #0d47a1;
+}
+
+main h2 { /* Ensure consistent h2 style */
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}

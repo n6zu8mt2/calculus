@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マクローリン/テイラー展開シミュレーター</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="maclaurin.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>マクローリン/テイラー展開シミュレーター</h1>
+                <p>〜複雑な関数を多項式で近似する〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>テイラー展開・マクローリン展開とは？ 🤔</h2>
+                    <p>
+                        複雑な関数 $f(x)$ を、$x=a$ の周りで<b>多項式</b>（$c_0 + c_1(x-a) + c_2(x-a)^2 + \dots$）の形に近似する手法です。
+                        特に、$a=0$ を中心とする場合を<b>マクローリン展開</b>と呼びます。
+                    </p>
+                    <p>
+                        $n$ 次までのテイラー展開（$n$ 次近似多項式） $P_n(x)$ は、以下の式で与えられます。$f^{(k)}(a)$ は $f(x)$ の $k$ 回微分に $x=a$ を代入した値、$k!$ は $k$ の階乗を表します。
+                    </p>
+                    $$
+                    P_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k = f(a) + \frac{f'(a)}{1!}(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \dots + \frac{f^{(n)}(a)}{n!}(x-a)^n
+                    $$
+                    <p>
+                        次数 $n$ を大きくするほど、$x=a$ の近くで $f(x)$ をより良く近似できます。このシミュレーターで、その様子を確かめてみましょう。
+                    </p>
+                </section>
+                
+                <section id="controls">
+                    <h2>シミュレーション設定</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="functionSelector">① 関数 $f(x)$ を選ぶ:</label>
+                            <select id="functionSelector">
+                                <option value="exp">f(x) = e^(bx)</option>
+                                <option value="sin">f(x) = sin(bx)</option>
+                                <option value="cos">f(x) = cos(bx)</option>
+                                <option value="log">f(x) = log(1+x)</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label for="centerA">② 展開の中心 $a$:</label>
+                            <input type="number" id="centerA" value="0" step="0.1">
+                            <small id="a-warning" class="warning-text hidden">log(1+x) は a=0 固定です</small>
+                        </div>
+                        <div class="param-group">
+                            <label for="paramB">③ 係数 $b$:</label>
+                            <input type="number" id="paramB" value="1" step="0.1">
+                            <small id="b-warning" class="warning-text hidden">log(1+x) では b は使用しません</small>
+                        </div>
+                         <div class="param-group slider-group">
+                            <label for="orderN">④ 展開の次数 $n$:</label>
+                            <input type="range" id="orderN" min="0" max="15" value="1" step="1">
+                            <span id="orderNValue">n = 1</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="results">
+                    <h2>グラフと展開式</h2>
+                    <div id="graph-holder"></div>
+                    <div id="formula-display">
+                        <h3>現在の展開式 $P_n(x)$ ( $n = <span id="formula-n">1</span>$ )</h3>
+                        <div id="polynomial-formula">
+                            $P_1(x) = ...$
+                        </div>
+                    </div>
+                </section>
+                
+                 <section id="function-details" class="explanation-box">
+                     <h2>選択中の関数の詳細</h2>
+                     <div id="details-content">
+                         </div>
+                 </section>
+
+                 <div class="back-link bottom">
+                     <a href="../index.html">← トップページに戻る</a>
+                 </div>
+                 </main>
+        </div>
+    </div>
+    
+    <script src="maclaurin.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

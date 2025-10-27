@@ -1,0 +1,154 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 解説セクションのスタイル */
+#explanation {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+#explanation p { font-size: 1.05em; }
+#explanation .mjx-chtml {
+    text-align: center;
+    margin: 1.5em 0;
+}
+
+/* コントロールセクション */
+#controls {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.controls-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    align-items: end; /* 高さを揃える */
+}
+
+.param-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.param-group label {
+    font-weight: bold;
+    color: #0d47a1;
+    margin-bottom: 5px;
+}
+
+.param-group input[type="number"],
+.param-group select {
+    font-size: 1.1em;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.param-group input[type="range"] {
+    width: 100%;
+}
+
+.slider-group span {
+    font-weight: bold;
+    color: #0d47a1;
+    text-align: right;
+}
+
+.param-group small {
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 5px;
+}
+.warning-text {
+    color: #c62828;
+    font-weight: bold;
+}
+.hidden { display: none; }
+
+/* 結果セクション */
+#results h2 { margin-bottom: 10px; } /* 見出しとグラフの間隔 */
+
+#graph-holder {
+    width: 100%;
+    max-width: 700px;
+    margin: 10px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ▼▼▼ グラフの軸目盛りテキスト ▼▼▼ */
+.axis-label {
+    fill: #555;
+    font-size: 10px;
+    font-family: sans-serif;
+}
+/* ▲▲▲ 軸目盛りここまで ▲▲▲ */
+
+
+#formula-display {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+#formula-display h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+#polynomial-formula {
+    font-size: 1.1em;
+    line-height: 1.7;
+    word-wrap: break-word; /* 長い数式を折り返す */
+}
+#polynomial-formula .mjx-chtml {
+    text-align: left !important; /* 左揃え */
+    margin: 0.5em 0 !important;
+}
+
+/* 関数詳細セクション (解説と同じスタイルを流用) */
+.explanation-box {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+.explanation-box h2 {
+    font-size: 1.5em; /* 少し小さく */
+}
+.explanation-box h3 { /* Section titles like "Case b=1" */
+    font-size: 1.2em;
+    color: #333; /* Darker than h4 */
+    margin-top: 15px;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 3px;
+}
+.explanation-box h4 { /* Sub-section titles */
+     font-size: 1.1em;
+     color: #5d4037; /* Brownish */
+     margin-top: 10px;
+}
+
+.explanation-box .mjx-chtml {
+    text-align: center;
+    margin: 1em 0;
+}
