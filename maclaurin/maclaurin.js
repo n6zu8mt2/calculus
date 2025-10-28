@@ -8,10 +8,12 @@ const MAX_ORDER = 15; // 描画する最大次数
 
 // DOM要素
 let funcSelector, centerAInput, paramBInput, orderNSlider;
-let orderNValueSpan, formulaNspan, polynomialFormulaDiv, detailsContentDiv;
+// ▼▼▼ formulaNspan を削除し、formulaTitleSpan を追加 ▼▼▼
+let orderNValueSpan, formulaTitleSpan, polynomialFormulaDiv, detailsContentDiv;
+// ▲▲▲ 変更ここまで ▲▲▲
 let aWarning, bWarning;
 
-// --- Helper Functions (No changes needed) ---
+// --- Helper Functions (変更なし) ---
 // Greatest Common Divisor
 function gcd(a, b) {
     a = Math.abs(a);
@@ -24,7 +26,6 @@ function gcd(a, b) {
         b %= a;
     }
 }
-
 // Convert decimal to fraction string (limited precision/denominator)
 function toFraction(decimal, tolerance = 1.0E-9, maxDenominator = 100) {
     if (isNaN(decimal) || !isFinite(decimal)) return null;
@@ -45,17 +46,20 @@ function toFraction(decimal, tolerance = 1.0E-9, maxDenominator = 100) {
     return `${sign * h1}/${k1}`;
 }
 
+
 // --- Function Definitions (Corrected LaTeX) ---
 const functionDefs = {
     'exp': {
         label: '$f(x) = e^{bx}$',
         func: (x, b) => Math.exp(b * x),
         deriv_k_at_a: (k, a, b) => Math.pow(b, k) * Math.exp(b * a),
+        // ▼▼▼ Corrected LaTeX: \\sum, \\frac ▼▼▼
         details: `<h3>$f(x) = e^{bx}$ のテイラー展開</h3>
                   <h4>ケース: $b=1, a=0$ (マクローリン展開)</h4>
                   $$ e^x = \\sum_{k=0}^{\\infty} \\frac{1}{k!}x^k = 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\dots $$
                   <h4>一般のケース ($x=a$ 中心)</h4>
                   $$ e^{bx} = e^{ba} \\sum_{k=0}^{\\infty} \\frac{b^k}{k!}(x-a)^k = e^{ba} \\left( 1 + b(x-a) + \\frac{b^2}{2!}(x-a)^2 + \\dots \\right) $$`
+        // ▲▲▲ Corrected LaTeX ▲▲▲
     },
     'sin': {
         label: '$f(x) = \\sin(bx)$',
@@ -63,19 +67,21 @@ const functionDefs = {
         deriv_k_at_a: (k, a, b) => {
             const power_b = Math.pow(b, k);
             switch (k % 4) {
-                case 0: return power_b * Math.sin(b * a);
-                case 1: return power_b * Math.cos(b * a);
-                case 2: return -power_b * Math.sin(b * a);
-                case 3: return -power_b * Math.cos(b * a);
+                case 0: return power_b * Math.sin(b * a); // sin
+                case 1: return power_b * Math.cos(b * a); // b cos
+                case 2: return -power_b * Math.sin(b * a); // -b^2 sin
+                case 3: return -power_b * Math.cos(b * a); // -b^3 cos
                 default: return 0;
             }
         },
+         // ▼▼▼ Corrected LaTeX: \\sum, \\frac ▼▼▼
         details: `<h3>$f(x) = \\sin(bx)$ のテイラー展開</h3>
                   <h4>ケース: $b=1, a=0$ (マクローリン展開)</h4>
                   $$ \\sin(x) = \\sum_{k=0}^{\\infty} \\frac{(-1)^k}{(2k+1)!}x^{2k+1} = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\dots $$
                   <h4>一般のケース ($x=a$ 中心)</h4>
                   <p>$f(x) = \\sin(bx)$ を $x=a$ を中心にテイラー展開するには、$f^{(k)}(a)$ の値を計算して代入します。</p>
                   $$ P_n(x) = \\sin(ba) + \\frac{b\\cos(ba)}{1!}(x-a) - \\frac{b^2\\sin(ba)}{2!}(x-a)^2 - \\frac{b^3\\cos(ba)}{3!}(x-a)^3 + \\dots $$`
+        // ▲▲▲ Corrected LaTeX ▲▲▲
     },
     'cos': {
         label: '$f(x) = \\cos(bx)$',
@@ -83,33 +89,37 @@ const functionDefs = {
         deriv_k_at_a: (k, a, b) => {
             const power_b = Math.pow(b, k);
             switch (k % 4) {
-                case 0: return power_b * Math.cos(b * a);
-                case 1: return -power_b * Math.sin(b * a);
-                case 2: return -power_b * Math.cos(b * a);
-                case 3: return power_b * Math.sin(b * a);
+                case 0: return power_b * Math.cos(b * a);  // cos
+                case 1: return -power_b * Math.sin(b * a); // -b sin
+                case 2: return -power_b * Math.cos(b * a); // -b^2 cos
+                case 3: return power_b * Math.sin(b * a);  // b^3 sin
                 default: return 0;
             }
         },
-        details: `<h3>$f(x) = \\cos(bx)$ のテイラー展開</h3>
+         // ▼▼▼ Corrected LaTeX: \\sum, \\frac ▼▼▼
+         details: `<h3>$f(x) = \\cos(bx)$ のテイラー展開</h3>
                   <h4>ケース: $b=1, a=0$ (マクローリン展開)</h4>
                   $$ \\cos(x) = \\sum_{k=0}^{\\infty} \\frac{(-1)^k}{(2k)!}x^{2k} = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\dots $$
                    <h4>一般のケース ($x=a$ 中心)</h4>
                   <p>$f(x) = \\cos(bx)$ を $x=a$ を中心にテイラー展開するには、$f^{(k)}(a)$ の値を計算して代入します。</p>
                  $$ P_n(x) = \\cos(ba) - \\frac{b\\sin(ba)}{1!}(x-a) - \\frac{b^2\\cos(ba)}{2!}(x-a)^2 + \\frac{b^3\\sin(ba)}{3!}(x-a)^3 + \\dots $$`
+         // ▲▲▲ Corrected LaTeX ▲▲▲
     },
     'log': {
         label: '$f(x) = \\log(1+x)$',
-        func: (x, b) => (x > -1) ? Math.log(1 + x) : NaN,
+        func: (x, b) => (x > -1) ? Math.log(1 + x) : NaN, // bは使わない
         deriv_k_at_a: (k, a, b) => {
-             if (a !== 0) return NaN;
-             if (k === 0) return 0;
+             if (a !== 0) return NaN; // a=0のみサポート
+             if (k === 0) return 0; // log(1)=0
              return Math.pow(-1, k - 1) * factorial(k - 1);
         },
-        details: `<h3>$f(x) = \\log(1+x)$ のマクローリン展開</h3>
+         // ▼▼▼ Corrected LaTeX: \\sum, \\frac ▼▼▼
+         details: `<h3>$f(x) = \\log(1+x)$ のマクローリン展開</h3>
                   <p>この関数は $x=0$ を中心とするマクローリン展開のみを考えます ($a=0$ 固定)。定義域は $x > -1$ です。</p>
                   <h4>展開式</h4>
                   $$ \\log(1+x) = \\sum_{k=1}^{\\infty} \\frac{(-1)^{k-1}}{k}x^k = x - \\frac{x^2}{2} + \\frac{x^3}{3} - \\frac{x^4}{4} + \\dots $$
                   <p>この展開は $|x| < 1$ で収束します。</p>`
+         // ▲▲▲ Corrected LaTeX ▲▲▲
     }
 };
 
@@ -127,12 +137,15 @@ function factorial(n) {
 
 // --- DOM読み込み完了時の処理 ---
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM要素を取得
     funcSelector = document.getElementById('functionSelector');
     centerAInput = document.getElementById('centerA');
     paramBInput = document.getElementById('paramB');
     orderNSlider = document.getElementById('orderN');
     orderNValueSpan = document.getElementById('orderNValue');
-    formulaNspan = document.getElementById('formula-n');
+    // ▼▼▼ formulaNspan を削除し、formulaTitleSpan を取得 ▼▼▼
+    formulaTitleSpan = document.getElementById('formula-title');
+    // ▲▲▲ 変更ここまで ▲▲▲
     polynomialFormulaDiv = document.getElementById('polynomial-formula');
     detailsContentDiv = document.getElementById('details-content');
     aWarning = document.getElementById('a-warning');
@@ -140,15 +153,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     p5sketch = new p5(sketch);
 
+    // イベントリスナーを設定
     funcSelector.addEventListener('change', handleInputChange);
     centerAInput.addEventListener('input', handleInputChange);
     paramBInput.addEventListener('input', handleInputChange);
     orderNSlider.addEventListener('input', handleInputChange);
 
+    // 初期表示
     updateUI();
 });
 
-// --- UI入力ハンドラ ---
+// --- UI入力ハンドラ (変更なし) ---
 function handleInputChange() {
     currentFunctionKey = funcSelector.value;
     centerA = parseFloat(centerAInput.value) || 0;
@@ -171,17 +186,21 @@ function handleInputChange() {
     updateUI();
 }
 
-// --- UI表示更新 (修正済み) ---
+// --- UI表示更新 (修正版) ---
 function updateUI() {
+    // スライダーの値表示 (変更なし)
     orderNValueSpan.textContent = `n = ${orderN}`;
-    formulaNspan.textContent = orderN;
+
+    // ▼▼▼ formulaTitleSpan の内容を更新 ▼▼▼
+    formulaTitleSpan.innerHTML = `\\( P_{${orderN}}(x) \\ (n = ${orderN}) \\)`;
+    // ▲▲▲ 変更ここまで ▲▲▲
 
     try {
         const polyTexFraction = generatePolynomialTex(currentFunctionKey, centerA, paramB, orderN, true);
         const polyTexDecimal = generatePolynomialTex(currentFunctionKey, centerA, paramB, orderN, false);
-        
-        // 修正：\\approx の前で改行、\\approx 直後の P_n(x) を削除
+        // ▼▼▼ 改行を追加し、2つ目の P_n(x)= を削除 ▼▼▼
         polynomialFormulaDiv.innerHTML = `\\( ${polyTexFraction} \\) <br> \\( \\approx ${polyTexDecimal} \\)`;
+        // ▲▲▲ 変更ここまで ▲▲▲
     } catch (e) {
         console.error("Error generating polynomial TeX:", e);
         polynomialFormulaDiv.innerHTML = "数式の生成中にエラーが発生しました。";
@@ -193,10 +212,13 @@ function updateUI() {
         setTimeout(() => {
             try {
                 if (window.MathJax.typesetPromise) {
-                    window.MathJax.typesetPromise([polynomialFormulaDiv, detailsContentDiv])
+                    // ▼▼▼ formulaTitleSpan もレンダリング対象に追加 ▼▼▼
+                    window.MathJax.typesetPromise([formulaTitleSpan, polynomialFormulaDiv, detailsContentDiv])
                         .catch((err) => console.error('MathJax Typesetting failed:', err));
                 } else if (window.MathJax.Hub) {
                      window.MathJax.Hub.Queue(
+                         // ▼▼▼ formulaTitleSpan もレンダリング対象に追加 ▼▼▼
+                         ["Typeset", window.MathJax.Hub, formulaTitleSpan],
                          ["Typeset", window.MathJax.Hub, polynomialFormulaDiv],
                          ["Typeset", window.MathJax.Hub, detailsContentDiv]
                      );
@@ -213,6 +235,7 @@ function updateUI() {
         console.warn("p5 sketch not ready for redraw");
     }
 }
+
 
 // --- TeX形式の多項式文字列を生成 (修正：小数版では P_n(x)= を削除) ---
 function generatePolynomialTex(key, a, b, n, useFraction) {
@@ -249,23 +272,24 @@ function generatePolynomialTex(key, a, b, n, useFraction) {
                            ? Math.round(abs_deriv_k).toString()
                            : abs_deriv_k.toFixed(3);
 
-             if (k <= 1 && Math.abs(abs_deriv_k - 1) < TOLERANCE) {
+             if (k <= 1 && Math.abs(abs_deriv_k - 1) < TOLERANCE) { // k=0,1 で |f^(k)|=1
                  if (k===0) coefficientStr = "1";
              }
-             else if (k <= 1) {
+             else if (k <= 1) { // k=0,1 で |f^(k)| != 1
                  coefficientStr = derivStr;
              }
-             else {
-                 if (Math.abs(abs_deriv_k - 1) < TOLERANCE) {
+             else { // k >= 2
+                 if (Math.abs(abs_deriv_k - 1) < TOLERANCE) { // |f^(k)| = 1
                       coefficientStr = `\\frac{1}{${fact_k}}`;
-                 } else {
+                 } else { // |f^(k)| != 1
                       coefficientStr = `\\frac{${derivStr}}{${fact_k}}`;
                  }
              }
+
         } else {
             const coefficient = abs_deriv_k / fact_k;
              if (Math.abs(coefficient - 1) < TOLERANCE && k > 0) {
-                 // 係数1は省略
+                // 係数1は省略
             } else {
                  coefficientStr = coefficient.toFixed(3);
                  if (coefficientStr.endsWith('.000')) {

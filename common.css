@@ -33,7 +33,7 @@ a:hover {
 /* --- サイドバー --- */
 /* Style loaded from sidebar.html */
 .sidebar {
-    width: 180px; /* ▼▼▼ 幅を狭く変更 (例: 280px -> 220px) ▼▼▼ */
+    width: 150px; /* ▼▼▼ 幅を狭く変更 (例: 280px -> 220px) ▼▼▼ */
     background-color: #e3f2fd; /* Sidebar background color */
     padding: 20px;
     border-right: 1px solid #bbdefb;

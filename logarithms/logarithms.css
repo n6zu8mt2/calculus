@@ -25,6 +25,10 @@ main h2 {
 #intro li {
     margin-bottom: 10px;
 }
+#intro b { /* Use <b> for bold */
+    font-weight: bold;
+}
+
 
 /* 各コンテンツボックスのスタイル */
 .content-box {
@@ -38,6 +42,9 @@ main h2 {
 
 .content-box p {
     font-size: 1.05em;
+}
+.content-box b { /* Use <b> for bold */
+    font-weight: bold;
 }
 
 .content-box ul {
@@ -53,11 +60,86 @@ main h2 {
 .content-box .mjx-chtml {
     display: block; /* ブロック要素にして中央揃えを効かせる */
     text-align: center;
-    margin: 1.5em 0;
+    margin: 1.5em auto; /* 上下マージン、左右自動 */
     font-size: 1.15em; /* 数式を少し大きく */
     padding: 10px;
     background-color: #fff;
     border: 1px solid #eee;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    max-width: fit-content; /* 数式の幅に合わせる */
+}
+
+/* ▼▼▼ Text/Table Split Layout ▼▼▼ */
+.split-layout {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 30px; /* Space between text and table */
+    margin-top: 15px;
+}
+
+.text-content {
+    flex: 3; /* Text takes more space */
+    min-width: 300px; /* Minimum width before wrapping */
+}
+
+.table-content {
+    flex: 2; /* Table takes less space */
+    min-width: 250px;
+}
+
+/* ▼▼▼ Table Styles ▼▼▼ */
+.table-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em; /* Slightly smaller text in table */
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow: hidden; /* For border-radius clipping */
+}
+.table-content caption {
+    font-weight: bold;
+    color: #0d47a1;
+    padding-bottom: 8px;
+    font-size: 1.1em;
+}
+.table-content th,
+.table-content td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+}
+.table-content th {
+    background-color: #e3f2fd; /* Light blue header */
+    font-weight: bold;
+}
+.table-content tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping */
+}
+.table-content td:first-child, /* First column (dB, pH, M) */
+.table-content th:first-child {
+    font-weight: bold;
+    text-align: center;
+}
+/* Align numerical columns to the right */
+.table-content td:nth-child(2),
+.table-content th:nth-child(2) {
+     text-align: right;
+}
+
+/* トップページへ戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
 }
