@@ -1,44 +1,21 @@
-/* 基本的なスタイル */
-body {
-    font-family: 'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
-    line-height: 1.8;
-    color: #333;
-    background-color: #f4f8ff;
-    margin: 0;
-    padding: 0;
-}
-
-#wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
-    text-align: center;
-    border-bottom: 3px double #4a90e2;
-    margin-bottom: 40px;
-}
-
-h1 {
-    font-size: 2.5em;
-    color: #0d47a1;
-}
-
-h2 {
+/* common.css の .container h2 のスタイルを main h2 にも適用 */
+main h2 {
     font-size: 1.8em;
-    color: #0d47a1;
-    border-left: 5px solid #4a90e2;
+    color: #0d47a1; /* ページの色調に合わせる */
+    border-left: 5px solid #4a90e2; /* ページの色調に合わせる */
     padding-left: 10px;
     margin-top: 40px;
 }
 
+/* ▼▼▼ 基本的なスタイル (body, #wrapper, header, h1 など) を削除 ▼▼▼ */
+
+/* section のスタイルを調整 */
 section {
-    margin-bottom: 40px;
+    margin-bottom: 30px; /* 少し詰める */
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 影を薄く */
 }
 
 .hidden {
@@ -46,18 +23,24 @@ section {
 }
 
 /* イントロ */
+.conditions h3 { /* h3 スタイルを追加 */
+    font-size: 1.2em;
+    color: #0d47a1;
+    margin-bottom: 10px;
+}
 .conditions ul {
     list-style: none;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background: #f9f9f9;
+    margin: 0;
 }
 
 .conditions li strong {
     color: #1565c0;
     display: inline-block;
-    width: 120px;
+    min-width: 120px;
 }
 
 /* シミュレーション */
@@ -110,7 +93,6 @@ section {
     transform: none;
 }
 
-
 #resetButton {
     background-color: #f44336;
 }
@@ -119,10 +101,11 @@ section {
 }
 
 #result p {
-    font-size: 1.2em;
+    font-size: 1.1em; /* 少し小さく */
     background: #f1f8ff;
     padding: 10px;
     border-radius: 5px;
+    margin: 8px 0; /* マージン調整 */
 }
 
 #result span {
@@ -130,6 +113,12 @@ section {
     color: #0d47a1;
 }
 
+/* 比較部分 */
+#comparison h3 { /* h3 スタイルを追加 */
+     font-size: 1.2em;
+     color: #0d47a1;
+     margin-bottom: 10px;
+}
 #comparison {
     margin-top: 20px;
     text-align: center;
@@ -153,6 +142,7 @@ section {
     font-size: 1.3em;
     font-weight: bold;
     color: #0d47a1;
+    margin: 0;
 }
 
 /* 結論 */
@@ -172,4 +162,35 @@ section {
     background: rgba(255,255,255,0.1);
     padding: 15px;
     border-radius: 5px;
+    font-size: 0.9em; /* 少し小さく */
+}
+#final-details p {
+    margin: 5px 0;
+}
+
+/* 解説 */
+#explanation ol {
+    padding-left: 25px; /* 少し詰める */
+}
+
+#explanation li {
+    margin-bottom: 10px; /* 少し詰める */
+}
+
+/* ▼▼▼ footerスタイルを削除 ▼▼▼ */
+
+/* トップページへ戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
 }

@@ -1,44 +1,21 @@
-/* 基本的なスタイル */
-body {
-    font-family: 'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
-    line-height: 1.8;
-    color: #333;
-    background-color: #f9f8f6;
-    margin: 0;
-    padding: 0;
-}
-
-#wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
-    text-align: center;
-    border-bottom: 3px double #c0a080;
-    margin-bottom: 40px;
-}
-
-h1 {
-    font-size: 2.5em;
-    color: #5d4037;
-}
-
-h2 {
+/* common.css の .container h2 のスタイルを main h2 にも適用 */
+main h2 {
     font-size: 1.8em;
-    color: #5d4037;
-    border-left: 5px solid #c0a080;
+    color: #5d4037; /* 栗まんじゅうの色に合わせる */
+    border-left: 5px solid #c0a080; /* 栗まんじゅうの色に合わせる */
     padding-left: 10px;
     margin-top: 40px;
 }
 
+/* ▼▼▼ 基本的なスタイル (body, #wrapper, header, h1 など) を削除 ▼▼▼ */
+
+/* section のスタイルを調整 */
 section {
-    margin-bottom: 40px;
+    margin-bottom: 30px; /* 少し詰める */
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 影を薄く */
 }
 
 .hidden {
@@ -46,143 +23,24 @@ section {
 }
 
 /* イントロ */
+.conditions h3 { /* h3 スタイルを追加 */
+    font-size: 1.2em;
+    color: #5d4037;
+    margin-bottom: 10px;
+}
 .conditions ul {
     list-style: none;
-    padding: 0;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 15px;
     background: #fafafa;
+    margin: 0; /* デフォルトマージンをリセット */
 }
 
 .conditions li strong {
     color: #a1887f;
     display: inline-block;
-    width: 180px;
-}
-
-/* シミュレーション */
-#startButton {
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin: 20px auto;
-    padding: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #fff;
-    background-color: #ff5722;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
-}
-
-#startButton:hover {
-    background-color: #e64a19;
-    transform: scale(1.05);
-}
-
-#result p {
-    font-size: 1.2em;
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 5px;
-    word-break: break-all;
-}
-
-#result span {
-    font-weight: bold;
-    color: #d84315;
-}
-
-#comparison {
-    margin-top: 20px;
-    text-align: center;
-}
-
-#scale-container {
-    padding: 20px;
-    border: 2px dashed #c0a080;
-    border-radius: 10px;
-    background: #fffaf0;
-}
-
-#scale-image {
-    max-width: 200px;
-    height: 150px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
-#scale-text {
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #5d4037;
-}
-
-/* 結論 */
-#conclusion {
-    background-color: #3a2e29;
-    color: #fff;
-    text-align: center;
-}
-
-.final-answer {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-.final-answer span {
-    font-size: 2em;
-    font-weight: bold;
-    color: #ffab40;
-    display: block;
-}
-
-#final-details {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 5px;
-    word-break: break-all;
-}
-
-/* 解説 */
-#explanation ol {
-    padding-left: 20px;
-}
-
-#explanation li {
-    margin-bottom: 15px;
-}
-
-/* 栗まんじゅうが宇宙を埋め尽くすアニメーション */
-#kurimanju-rain {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-    overflow: hidden;
-}
-
-.kurimanju {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background-image: url('images/manju.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: fall linear forwards;
-}
-
-@keyframes fall {
-    to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
+    min-width: 150px; /* 幅を自動調整 */
 }
 
 /* シミュレーション */
@@ -196,10 +54,11 @@ section {
 
 #startButton, #pauseButton, #resumeButton {
     display: block;
-    width: 60%;
+    width: auto; /* 幅を自動に */
+    min-width: 150px;
     max-width: 240px;
-    padding: 15px;
-    font-size: 1.2em;
+    padding: 12px 25px; /* パディング調整 */
+    font-size: 1.1em; /* 少し小さく */
     font-weight: bold;
     color: #fff;
     border: none;
@@ -230,13 +89,134 @@ section {
     background-color: #43a047;
 }
 
-
 #result p {
-    font-size: 1.2em;
+    font-size: 1.1em; /* 少し小さく */
     background: #f1f1f1;
     padding: 10px;
     border-radius: 5px;
     word-break: break-all;
+    margin: 8px 0; /* マージン調整 */
 }
 
-/* (省略) この後のスタイルはそのまま */
+#result span {
+    font-weight: bold;
+    color: #d84315;
+}
+
+/* 比較部分 */
+#comparison h3 { /* h3 スタイルを追加 */
+     font-size: 1.2em;
+     color: #5d4037;
+     margin-bottom: 10px;
+}
+#comparison {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#scale-container {
+    padding: 20px;
+    border: 2px dashed #c0a080;
+    border-radius: 10px;
+    background: #fffaf0;
+}
+
+#scale-image {
+    max-width: 200px;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+#scale-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #5d4037;
+    margin: 0; /* デフォルトマージンをリセット */
+}
+
+/* 結論 */
+#conclusion {
+    background-color: #3a2e29;
+    color: #fff;
+    text-align: center;
+}
+
+.final-answer {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.final-answer span {
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffab40;
+    display: block;
+}
+
+#final-details {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 5px;
+    word-break: break-all;
+    font-size: 0.9em; /* 少し小さく */
+}
+#final-details p {
+    margin: 5px 0;
+}
+
+/* 解説 */
+#explanation ol {
+    padding-left: 25px; /* 少し詰める */
+}
+
+#explanation li {
+    margin-bottom: 10px; /* 少し詰める */
+}
+
+/* ▼▼▼ footerスタイルを削除 ▼▼▼ */
+
+/* 栗まんじゅうアニメーション */
+#kurimanju-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.kurimanju {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-image: url('images/manju.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* トップページへ戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}
