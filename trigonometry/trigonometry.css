@@ -1,0 +1,87 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 導入セクションのスタイル */
+#intro {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    font-size: 1.05em;
+    line-height: 1.8;
+}
+
+#intro ol {
+    padding-left: 30px;
+}
+
+#intro li {
+    margin-bottom: 10px;
+}
+#intro b { /* <b> タグを使用 */
+    font-weight: bold;
+}
+
+
+/* 各コンテンツボックスのスタイル */
+.content-box {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+
+.content-box p {
+    font-size: 1.05em;
+}
+.content-box b { /* <b> タグを使用 */
+    font-weight: bold;
+}
+
+.content-box ul {
+    list-style-type: disc;
+    padding-left: 30px;
+}
+
+.content-box li {
+    margin-bottom: 8px;
+}
+
+/* 数式を中央揃えにし、目立たせる */
+.content-box .mjx-chtml {
+    display: block; /* ブロック要素にして中央揃えを効かせる */
+    text-align: center;
+    margin: 1.5em auto; /* 上下マージン、左右自動 */
+    font-size: 1.15em; /* 数式を少し大きく */
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    max-width: fit-content; /* 数式の幅に合わせる */
+}
+
+/* トップページへ戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}

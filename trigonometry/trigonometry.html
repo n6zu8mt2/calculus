@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三角関数の応用 | なぜ世界は波と回転であふれているのか？</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="trigonometry.css">
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>三角関数の応用</h1>
+                <p>〜ゲーム、CG、音、電気で見る三角関数の力〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="intro">
+                    <h2>なぜ「三角関数」を使うのか？</h2>
+                    <p>
+                        $\sin$（サイン）、$\cos$（コサイン）、$\tan$（タンジェント）は、単に「三角形の辺の比」だけではありません。
+                        三角関数により、<b>「回転運動」</b>と<b>「波（振動）」</b>という、この世界で最もありふれた2つの現象を記述することができます。
+                    </p>
+                    <p>
+                        もし三角関数がなければ、ゲームのキャラクターは振り向けず、スマホは音を鳴らせず、家には電気が届きません。
+                        ここでは、三角関数がどのように世界を支えているかを見ていきましょう。
+                    </p>
+                </section>
+
+                <section class="content-box">
+                    <h2>1. 3Dグラフィックスと回転<! -- （ゲーム・CG） --> 🎮</h2>
+                    <p>
+                        ゲームのキャラクターが滑らかに振り向いたり、3Dモデルをマウスで回転させたりできるのは、三角関数のおかげです。
+                        ある点 $(x, y)$ を原点を中心に角度 $\theta$ だけ回転させて新しい点 $(x', y')$ に移す計算は、まさしく三角関数そのものです。
+                    </p>
+                    $$
+                    x' = x \cos\theta - y \sin\theta $$
+                    $$
+                    y' = x \sin\theta + y \cos\theta
+                    $$
+                    <p>
+                        この<b>「回転行列」</b>と呼ばれる計算式が、すべての3DゲームやCGソフトウェアの「回転」の核となっています。
+                    </p>
+                </section>
+
+                <section class="content-box">
+                    <h2>2. 物理エンジンと放物運動<! --（ゲーム） --> 🏀</h2>
+                    <p>
+                        ゲームで大砲を撃ったり、キャラクターがジャンプしたりする際の「放物運動」の軌道計算にも三角関数は不可欠です。
+                        角度 $\theta$、初速 $v_0$ で物体が発射されると、その速度は2つの成分に分解されます。
+                    </p>
+                    <ul>
+                        <li><b>水平方向の速度 (x)</b>: $v_x = v_0 \cos\theta$ （等速）</li>
+                        <li><b>垂直方向の速度 (y)</b>: $v_y = v_0 \sin\theta$ （重力で減速）</li>
+                    </ul>
+                    <p>
+                        これにより、$t$ 秒後の位置 $(x(t), y(t))$ が正確に決まります。
+                    </p>
+                    $$
+                    x(t) = (v_0 \cos\theta) \cdot t \qquad \quad$$
+                    $$
+                    y(t) = (v_0 \sin\theta) \cdot t - \frac{1}{2}gt^2
+                    $$
+                    <p>
+                        <! --ゲームデザイナーは -->
+                        $\theta$ を変えることで、プレイヤーに様々なジャンプや射撃の軌道を提供できるのです。
+                    </p>
+                </section>
+
+                <section class="content-box">
+                    <h2>3. リアルな光の表現 <! --（CG・ゲーム）--> 💡</h2>
+                    <p>
+                        3Dモデルがのっぺりとした平面に見えず、立体的に見えるのは、光の当たり方を計算しているからです。
+                        ある面がどれだけ明るく見えるかは、その面の「法線（面に垂直な線）」と「光源からの光」がなす角度 $\theta$ に依存します（ランバート反射）。
+                    </p>
+                    <p>
+                        明るさは $\cos\theta$ に比例します。
+                    </p>
+                    $$
+                    \text{明るさ} \propto \cos\theta
+                    $$
+                    <ul>
+                        <li><b>$\theta = 0^\circ$ (光を正面から受ける)</b>: $\cos(0^\circ) = 1$ で最も明るい。</li>
+                        <li><b>$\theta = 90^\circ$ (光が真横から掠める)</b>: $\cos(90^\circ) = 0$ で明るさゼロ（影）。</li>
+                    </ul>
+                    <p>
+                        この単純な計算のおかげで、CGの球は丸く見えます。
+                    </p>
+                </section>
+                
+                <section class="content-box">
+                    <h2>4. 音と音楽の合成 🎶</h2>
+                    <p>
+                        「音」の正体は、空気の振動（波）です。「ラ」の音（440Hz）のような純粋な音は、きれいな $\sin$ 波で表されます。
+                    </p>
+                    $$
+                    y(t) = A \sin(2\pi f t)
+                    $$
+                    <p>
+                        ここで $A$ は振幅（音量）、$f$ は周波数（音の高さ）です。
+                        ピアノやギターの複雑な「音色」は、この基本となる $\sin$ 波（基音）と、その整数倍の周波数の $\sin$ 波（倍音）が、様々な比率で足し合わさったものです。AIによる音声合成なども、この原理（フーリエ解析）を応用しています。
+                    </p>
+                </section>
+                
+                <section class="content-box">
+                    <h2>5. 交流電流 ⚡</h2>
+                    <p>
+                        家庭のコンセントに流れている電気（交流）は、電圧が一定ではありません。電圧は 0V を中心に、プラスとマイナスを行き来する<b>$\sin$ 波の形</b>で周期的に変化しています。
+                    </p>
+                    <p>
+                        東日本ではこの周波数 $f$ が 50Hz（1秒間に50回振動）です。
+                        家庭用の電圧は「実効値 100V」と呼ばれますが、電圧の最大値 $V_{\text{max}}$ は $100\sqrt{2} \approx 141\text{V}$ にも達します。
+                    </p>
+                    $$
+                    V(t) = V_{\text{max}} \sin(2\pi f t) = 141 \sin(100\pi t)
+                    $$
+                    <p>
+                        私たちの生活を支える電力システムは、三角関数によって記述されています。
+                    </p>
+                </section>
+
+                <div class="back-link bottom">
+                    <a href="../index.html">← トップページに戻る</a>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
