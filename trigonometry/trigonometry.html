@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../common.css">
     <link rel="stylesheet" href="trigonometry.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
     <script>
         MathJax = {
           tex: {
@@ -37,7 +39,7 @@
                     <h2>なぜ「三角関数」を使うのか？</h2>
                     <p>
                         $\sin$（サイン）、$\cos$（コサイン）、$\tan$（タンジェント）は、単に「三角形の辺の比」だけではありません。
-                        三角関数により、<b>「回転運動」</b>と<b>「波（振動）」</b>という、この世界で最もありふれた2つの現象を記述することができます。
+                        これらは、<b>「回転運動」</b>と<b>「波（振動）」</b>という、この世界で最もありふれた2つの現象を記述するための「言語」です。
                     </p>
                     <p>
                         もし三角関数がなければ、ゲームのキャラクターは振り向けず、スマホは音を鳴らせず、家には電気が届きません。
@@ -46,23 +48,22 @@
                 </section>
 
                 <section class="content-box">
-                    <h2>1. 3Dグラフィックスと回転<! -- （ゲーム・CG） --> 🎮</h2>
+                    <h2>1. 3Dグラフィックスと回転 🎮</h2>
                     <p>
                         ゲームのキャラクターが滑らかに振り向いたり、3Dモデルをマウスで回転させたりできるのは、三角関数のおかげです。
                         ある点 $(x, y)$ を原点を中心に角度 $\theta$ だけ回転させて新しい点 $(x', y')$ に移す計算は、まさしく三角関数そのものです。
                     </p>
-                    $$
-                    x' = x \cos\theta - y \sin\theta $$
-                    $$
-                    y' = x \sin\theta + y \cos\theta
-                    $$
+                    \begin{align}
+                    x' &= x \cos\theta - y \sin\theta \\
+                    y' &= x \sin\theta + y \cos\theta
+                    \end{align}
                     <p>
                         この<b>「回転行列」</b>と呼ばれる計算式が、すべての3DゲームやCGソフトウェアの「回転」の核となっています。
                     </p>
                 </section>
 
                 <section class="content-box">
-                    <h2>2. 物理エンジンと放物運動<! --（ゲーム） --> 🏀</h2>
+                    <h2>2. 物理エンジンと放物運動 🏀</h2>
                     <p>
                         ゲームで大砲を撃ったり、キャラクターがジャンプしたりする際の「放物運動」の軌道計算にも三角関数は不可欠です。
                         角度 $\theta$、初速 $v_0$ で物体が発射されると、その速度は2つの成分に分解されます。
@@ -74,50 +75,82 @@
                     <p>
                         これにより、$t$ 秒後の位置 $(x(t), y(t))$ が正確に決まります。
                     </p>
-                    $$
-                    x(t) = (v_0 \cos\theta) \cdot t \qquad \quad$$
-                    $$
-                    y(t) = (v_0 \sin\theta) \cdot t - \frac{1}{2}gt^2
-                    $$
+                    \begin{align}
+                    x(t) &= (v_0 \cos\theta) \cdot t \\
+                    y(t) &= (v_0 \sin\theta) \cdot t - \frac{1}{2}gt^2
+                    \end{align}
                     <p>
-                        <! --ゲームデザイナーは -->
-                        $\theta$ を変えることで、プレイヤーに様々なジャンプや射撃の軌道を提供できるのです。
+                        ゲームデザイナーは $\theta$ を変えることで、プレイヤーに様々なジャンプや射撃の軌道を提供できるのです。
                     </p>
                 </section>
 
                 <section class="content-box">
-                    <h2>3. リアルな光の表現 <! --（CG・ゲーム）--> 💡</h2>
+                    <h2>3. リアルな光の表現 💡</h2>
                     <p>
                         3Dモデルがのっぺりとした平面に見えず、立体的に見えるのは、光の当たり方を計算しているからです。
                         ある面がどれだけ明るく見えるかは、その面の「法線（面に垂直な線）」と「光源からの光」がなす角度 $\theta$ に依存します（ランバート反射）。
                     </p>
                     <p>
-                        明るさは $\cos\theta$ に比例します。
+                        明るさは $\cos\theta$ に比例します。($\theta$ が $90^\circ$ を超えると明るさは 0)
                     </p>
                     $$
-                    \text{明るさ} \propto \cos\theta
+                    \text{明るさ} \propto \max(0, \cos\theta)
                     $$
-                    <ul>
-                        <li><b>$\theta = 0^\circ$ (光を正面から受ける)</b>: $\cos(0^\circ) = 1$ で最も明るい。</li>
-                        <li><b>$\theta = 90^\circ$ (光が真横から掠める)</b>: $\cos(90^\circ) = 0$ で明るさゼロ（影）。</li>
-                    </ul>
+                    この計算は、CGの分野ではベクトル（3Dの矢印）を使って効率的に行われます。面の向きを示す「<b>法線ベクトル</b>（$\vec{N}$）」と、光の方向を示す「<b>光源ベクトル</b>（$\vec{L}$）」という2つのベクトルを用意します（通常、長さ1の単位ベクトルを使います）。
+                    </p>
                     <p>
-                        この単純な計算のおかげで、CGの球は丸く見えます。
+                        この2つのベクトルの<b>内積（Dot Product）</b>を計算すると、まさしく $\cos\theta$ の値（$\vec{N} \cdot \vec{L} = |\vec{N}||\vec{L}|\cos\theta = 1 \cdot 1 \cdot \cos\theta = \cos\theta$）が直接得られます。これにより、コンピュータは膨大な数の面（ポリゴン）の明るさを瞬時に計算できるのです。
                     </p>
+                    <div class="demo-container">
+                        <div id="lighting-canvas-holder"></div>
+                        <div class="demo-controls">
+                            <label for="angle">光の角度 (θ):</label>
+                            <input type="range" id="angle" min="0" max="180" value="45" step="1">
+                            <span id="angleValue">45°</span>
+                            <span class="calc-result">明るさ $\propto \cos(\theta) = $ <b id="brightnessValue">...</b></span>
+                        </div>
+                    </div>
                 </section>
                 
                 <section class="content-box">
-                    <h2>4. 音と音楽の合成 🎶</h2>
+                    <h2>4. 音と音楽の合成🎶</h2>
                     <p>
                         「音」の正体は、空気の振動（波）です。「ラ」の音（440Hz）のような純粋な音は、きれいな $\sin$ 波で表されます。
+                        $$
+                        y(t) = A \sin(2\pi f t + \theta_0)
+                        $$
+                        $A$ は振幅（音量）、$f$ は周波数（音の高さ）、$\theta_0$ は位相（波のズレ）です。
+                        ピアノやギターの複雑な「音色」は、この $\sin$ 波（基音）と、その整数倍の周波数の $\sin$ 波（倍音）が、様々な比率で足し合わさったものです。
                     </p>
-                    $$
-                    y(t) = A \sin(2\pi f t)
-                    $$
-                    <p>
-                        ここで $A$ は振幅（音量）、$f$ は周波数（音の高さ）です。
-                        ピアノやギターの複雑な「音色」は、この基本となる $\sin$ 波（基音）と、その整数倍の周波数の $\sin$ 波（倍音）が、様々な比率で足し合わさったものです。AIによる音声合成なども、この原理（フーリエ解析）を応用しています。
-                    </p>
+                    <p class="caption">
+                            <b>(1) 基準の音</b> (中くらいの音量・高さ)<br>
+                            <b>(2) 大きい音</b>: (1)より $A$ (振幅)が大きく、波の上下幅が広い。<br>
+                            <b>(3) 小さい音</b>: (1)より $A$ (振幅)が小さく、波の上下幅が狭い。<br>
+                            <b>(4) 高い音</b>: (1)より $f$ (周波数)が高く、波が細かく（密に）振動している。
+                            <br>
+                            <b>(5) 低い音</b>: (1)より $f$ (周波数)が低く、波が粗く（疎に）振動している。 
+                            <br>
+                        </p>
+                    <div class="demo-container">
+                        <div id="sine-wave-canvas-holder"></div>
+                        <div class="demo-controls sine-controls">
+                            <label for="amplitude">振幅 ($A$):</label>
+                            <input type="range" id="amplitude" min="0.1" max="2" value="1" step="0.1">
+                            <span id="amplitudeValue">1.0</span>
+
+                            <label for="frequency">周波数 ($f$):</label>
+                            <input type="range" id="frequency" min="0.5" max="3" value="1" step="0.1">
+                            <span id="frequencyValue">1.0</span>
+                            
+                            <label for="phase">位相 ($\theta_0$):</label>
+                            <input type="range" id="phase" min="-3.14" max="3.14" value="0" step="0.01">
+                            <span id="phaseValue">0.00</span>
+                        </div>
+                        <ul class="legend">
+                            <li><span class="legend-color" style="background: #9E9E9E;"></span> <b>基準: $y = \sin(x)$</b></li>
+                            <li><span class="legend-color" style="background: #E53935;"></span> <b>比較: $y = A \sin(Bx + C)$</b></li>
+                        </ul>
+                    </div>
                 </section>
                 
                 <section class="content-box">
@@ -143,6 +176,8 @@
             </main>
         </div>
     </div>
+    
+    <script src="trigonometry.js"></script>
     <script src="../sidebar.js"></script>
-</body>
+    </body>
 </html>
