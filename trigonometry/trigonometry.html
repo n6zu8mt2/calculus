@@ -79,24 +79,103 @@
                     x(t) &= (v_0 \cos\theta) \cdot t \\
                     y(t) &= (v_0 \sin\theta) \cdot t - \frac{1}{2}gt^2
                     \end{align}
-                    <p>
-                        ゲームデザイナーは $\theta$ を変えることで、プレイヤーに様々なジャンプや射撃の軌道を提供できるのです。
-                    </p>
+                    <div class="demo-container wide">
+                        <div id="parabolic-canvas-holder"></div>
+                        <div class="demo-controls parabolic-controls">
+                            <label for="parabolic-angle">角度 ($\theta$):</label>
+                            <input type="range" id="parabolic-angle" min="5" max="85" value="45" step="1">
+                            <span id="parabolic-angleValue">45°</span>
+
+                            <label for="parabolic-velocity">初速 ($v₀$):</label>
+                            <input type="range" id="parabolic-velocity" min="10" max="100" value="70" step="1">
+                            <span id="parabolic-velocityValue">70</span>
+                            
+                            <label></label>
+                            <button id="parabolic-fireButton">発射</button>
+                            <button id="parabolic-clearButton">クリア</button>
+                        </div>
+                    </div>
                 </section>
 
                 <section class="content-box">
-                    <h2>3. リアルな光の表現 💡</h2>
+                    <h2>3. 等速円運動（アニメーション） 🎡</h2>
+                    <p>
+                        最も基本的な「回転」の表現です。物体が半径 $A$ の円周上を角速度 $\omega$（1秒間に進む角度）で回るとき、時刻 $t$ での物体の位置 $(x, y)$ は三角関数で完璧に記述できます。
+                        $x$ 方向の振幅 $A$ と $y$ 方向の振幅 $B$ を変えると、楕円軌道を描くこともできます。
+                    </p>
+                    \begin{align}
+                    x(t) &= A \cos(\omega t) \\
+                    y(t) &= B \sin(\omega t)
+                    \end{align}
+                    <p>
+                        （このデモでは、p5.jsのY軸（下向き）に合わせて $y(t) = -B \sin(\omega t)$ で計算し、反時計回りを実現しています）
+                    </p>
+                    <div class="demo-container wide">
+                        <div id="circular-motion-canvas-holder"></div>
+                        <div class="demo-controls circular-controls">
+                            <label for="cm-amplitude-x">X振幅 ($A$):</label>
+                            <input type="range" id="cm-amplitude-x" min="20" max="150" value="100" step="1">
+                            <span id="cm-amplitude-xValue">100</span>
+
+                            <label for="cm-amplitude-y">Y振幅 ($B$):</label>
+                            <input type="range" id="cm-amplitude-y" min="20" max="150" value="100" step="1">
+                            <span id="cm-amplitude-yValue">100</span>
+
+                            <label for="cm-omega">角速度 ($\omega$):</label>
+                            <input type="range" id="cm-omega" min="0.5" max="5" value="1" step="0.1">
+                            <span id="cm-omegaValue">1.0</span>
+                            
+                            <label>再生:</label>
+                            <button id="cm-playPauseButton">再生</button>
+                            <button id="cm-resetButton">リセット</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-box">
+                    <h2>4. 単振動（バネの運動） 📏</h2>
+                    <p>
+                        「等速円運動」を真横から見ると、物体は行ったり来たりする「単振動」に見えます。
+                        この単振動は、バネの運動や振り子の運動の基本モデルであり、その位置 $x$ は $\cos$（または $\sin$）だけで表されます。
+                    </p>
+                    $$
+                    x(t) = A \cos(\omega t)
+                    $$
+                <!-- <p>
+                        以下のデモは、上の「等速円運動」の $x$ 座標だけを取り出し、バネの運動として可視化したものです。スライダーは上のデモと連動します。
+                    </p>-->
+                    <div class="demo-container wide">
+                        <div id="shm-canvas-holder"></div>
+                        <div class="demo-controls shm-controls">
+                            <label for="shm-amplitude">振幅 ($A$):</label>
+                            <input type="range" id="shm-amplitude" min="20" max="150" value="100" step="1">
+                            <span id="shm-amplitudeValue">100</span>
+
+                            <label for="shm-omega">角速度 ($\omega$):</label>
+                            <input type="range" id="shm-omega" min="0.5" max="5" value="1" step="0.1">
+                            <span id="shm-omegaValue">1.0</span>
+                            
+                            <label>再生:</label>
+                            <button id="shm-playPauseButton">再生</button>
+                            <button id="shm-resetButton">リセット</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-box">
+                    <h2>5. リアルな光の表現 💡</h2>
                     <p>
                         3Dモデルがのっぺりとした平面に見えず、立体的に見えるのは、光の当たり方を計算しているからです。
-                        ある面がどれだけ明るく見えるかは、その面の「法線（面に垂直な線）」と「光源からの光」がなす角度 $\theta$ に依存します（ランバート反射）。
+                        ある面がどれだけ明るく見えるかは、その面の「法線（面に垂直な線）」と「光源からの光」がなす角度 $\theta$ に依存します（ランバース反射）。
                     </p>
                     <p>
-                        明るさは $\cos\theta$ に比例します。($\theta$ が $90^\circ$ を超えると明るさは 0)
+                        明るさは $\cos\theta$ に比例します。($\theta$ が $\pm 90^\circ$ を超えると明るさは 0)
                     </p>
                     $$
                     \text{明るさ} \propto \max(0, \cos\theta)
                     $$
-                    この計算は、CGの分野ではベクトル（3Dの矢印）を使って効率的に行われます。面の向きを示す「<b>法線ベクトル</b>（$\vec{N}$）」と、光の方向を示す「<b>光源ベクトル</b>（$\vec{L}$）」という2つのベクトルを用意します（通常、長さ1の単位ベクトルを使います）。
+                    <p>
+                        この計算は、CGの分野ではベクトル（3Dの矢印）を使って効率的に行われます。面の向きを示す「<b>法線ベクトル</b>（$\vec{N}$）」と、光の方向を示す「<b>光源ベクトル</b>（$\vec{L}$）」という2つのベクトルを用意します（通常、長さ1の単位ベクトルを使います）。
                     </p>
                     <p>
                         この2つのベクトルの<b>内積（Dot Product）</b>を計算すると、まさしく $\cos\theta$ の値（$\vec{N} \cdot \vec{L} = |\vec{N}||\vec{L}|\cos\theta = 1 \cdot 1 \cdot \cos\theta = \cos\theta$）が直接得られます。これにより、コンピュータは膨大な数の面（ポリゴン）の明るさを瞬時に計算できるのです。
@@ -105,15 +184,15 @@
                         <div id="lighting-canvas-holder"></div>
                         <div class="demo-controls">
                             <label for="angle">光の角度 (θ):</label>
-                            <input type="range" id="angle" min="0" max="180" value="45" step="1">
-                            <span id="angleValue">45°</span>
+                            <input type="range" id="angle" min="-90" max="90" value="30" step="1">
+                            <span id="angleValue">30°</span>
                             <span class="calc-result">明るさ $\propto \cos(\theta) = $ <b id="brightnessValue">...</b></span>
                         </div>
                     </div>
                 </section>
                 
                 <section class="content-box">
-                    <h2>4. 音と音楽の合成🎶</h2>
+                    <h2>6. 音と音楽の合成🎶</h2>
                     <p>
                         「音」の正体は、空気の振動（波）です。「ラ」の音（440Hz）のような純粋な音は、きれいな $\sin$ 波で表されます。
                         $$
@@ -153,10 +232,11 @@
                     </div>
                 </section>
                 
+
                 <section class="content-box">
-                    <h2>5. 交流電流 ⚡</h2>
+                    <h2>7. 交流電流 ⚡</h2>
                     <p>
-                        家庭のコンセントに流れている電気（交流）は、電圧が一定ではありません。電圧は 0V を中心に、プラスとマイナスを行き来する<b>$\sin$ 波の形</b>で周期的に変化しています。
+                        家庭のコンセントに流れている電気（交流）は、電圧が一定ではありません。電圧は $0$V を中心に、プラスとマイナスを行き来する<b>$\sin$ 波の形</b>で周期的に変化しています。
                     </p>
                     <p>
                         東日本ではこの周波数 $f$ が 50Hz（1秒間に50回振動）です。
@@ -170,6 +250,47 @@
                     </p>
                 </section>
 
+                                <section class="content-box">
+                    <h2>8. GPSと三角測量 🛰️</h2>
+                    <p>
+                        GPSや地図作成の基本原理は、高校で習う<b>三角測量</b>です。
+                        2つの既知の点（A, B）からの距離 $c$ が分かっており、各点から目標（P）を見た角度 $\theta_A, \theta_B$ が分かれば、Pの位置を特定できます。
+                    </p>
+                    <p>
+                        三角形の内角の和は $180^\circ$（$\pi$ ラジアン）なので、$\theta_P = 180^\circ - \theta_A - \theta_B$ となります。
+                        「正弦定理」を使えば、AからPまでの距離 $b$ が計算できます。
+                    </p>
+                    $$
+                    \frac{b}{\sin \theta_B} = \frac{c}{\sin \theta_P} \quad \implies \quad b = \frac{c \sin \theta_B}{\sin(180^\circ - \theta_A - \theta_B)}
+                    $$
+                    <p>
+                        距離 $b$ と角度 $\theta_A$ が分かれば、点Aを原点 $(0,0)$ としたときの点Pの座標は $(b \cos \theta_A, b \sin \theta_A)$ として一意に定まります。
+                    </p>
+                    <p>
+                        この原理を使って、GPS衛星からの信号を基に地上の位置を高精度に特定しています。<a href="https://clicccar.com/2021/06/09/1088999/" target="_blank">参考リンク</a><br>
+                        また、マインクラフトのエンダーアイを用いたエンド要塞の位置特定にも同様の三角測量が使われるようです。
+                        <a href="https://maikuranikki.jp/e/minecraft_1_16_1_rta" target="_blank">参考リンク</a>
+                    </p>
+                    <div class="demo-container wide">
+                        <div id="triangulation-canvas-holder"></div>
+                        <div class="demo-controls triangulation-controls">
+                            <label for="tri-angle-a">塔Aの角度 ($\theta_A$):</label>
+                            <input type="range" id="tri-angle-a" min="1" max="89" value="60" step="1">
+                            <span id="tri-angle-aValue">60°</span>
+                            
+                            <label for="tri-angle-b">塔Bの角度 ($\theta_B$):</label>
+                            <input type="range" id="tri-angle-b" min="1" max="89" value="45" step="1">
+                            <span id="tri-angle-bValue">45°</span>
+
+                            <label for="tri-distance">塔の距離 ($c$):</label>
+                            <input type="range" id="tri-distance" min="50" max="300" value="200" step="1">
+                            <span id="tri-distanceValue">200</span>
+                            
+                            <label></label>
+                            <span class="calc-result" id="tri-position-result">計算中...</span>
+                        </div>
+                    </div>
+                </section>
                 <div class="back-link bottom">
                     <a href="../index.html">← トップページに戻る</a>
                 </div>

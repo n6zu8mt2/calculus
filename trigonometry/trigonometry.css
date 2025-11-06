@@ -47,6 +47,16 @@
     margin-bottom: 8px;
 }
 
+.content-box .caption {
+    font-size: 0.9em;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+
 /* 数式を中央揃えにし、目立たせる */
 .content-box .mjx-chtml {
     display: block; 
@@ -75,9 +85,24 @@
     justify-content: center;
 }
 
+/* ▼ 横長のデモコンテナ ▼ */
+.demo-container.wide {
+    flex-direction: column;
+    align-items: center;
+}
+.demo-container.wide .demo-controls {
+    width: 100%;
+    max-width: 500px; /* スライダーが長くなりすぎないように */
+}
+
+
 /* キャンバスホルダー */
 #lighting-canvas-holder,
-#sine-wave-canvas-holder {
+#sine-wave-canvas-holder,
+#circular-motion-canvas-holder,
+#shm-canvas-holder,
+#parabolic-canvas-holder,
+#triangulation-canvas-holder { /* ▼ 三角測量を追加 */
     border: 1px solid #ddd;
     border-radius: 5px;
     overflow: hidden;
@@ -105,6 +130,66 @@
     font-weight: bold;
     color: #0d47a1;
 }
+
+/* ▼ ボタンのスタイル ▼ */
+.demo-controls button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #4caf50; /* 緑 */
+}
+.demo-controls button:hover {
+    opacity: 0.8;
+}
+.demo-controls button.playing {
+    background-color: #f44336; /* 赤 */
+}
+#cm-resetButton, #shm-resetButton, #parabolic-clearButton {
+    background-color: #757575; /* グレー */
+}
+
+/* ▼ コントロールのグリッドレイアウト調整 ▼ */
+.circular-controls, .shm-controls, .parabolic-controls, .triangulation-controls {
+    grid-template-columns: auto 1fr auto; /* 3列 */
+}
+.circular-controls label:nth-child(7), /* 再生ラベル */
+.shm-controls label:nth-child(5),    /* 再生ラベル */
+.parabolic-controls label:nth-child(4) { /* 3行目の空ラベル */
+    grid-column: 1 / 2;
+}
+.circular-controls button[id*="play"],
+.shm-controls button[id*="play"],
+.parabolic-controls button[id*="fire"] {
+     grid-column: 2 / 3;
+     justify-self: start;
+}
+.circular-controls button[id*="reset"],
+.shm-controls button[id*="reset"],
+.parabolic-controls button[id*="clear"] {
+     grid-column: 3 / 4;
+     justify-self: start;
+}
+/* 円運動はスライダーが多いので調整 */
+.circular-controls {
+     grid-template-columns: auto 1fr auto;
+}
+.circular-controls label[for="cm-omega"] { grid-row: 3; }
+.circular-controls input[id="cm-omega"] { grid-row: 3; }
+.circular-controls span[id="cm-omegaValue"] { grid-row: 3; }
+.circular-controls label:nth-child(7) { grid-row: 4; } /* 再生ラベル */
+.circular-controls button[id*="play"] { grid-row: 4; }
+.circular-controls button[id*="reset"] { grid-row: 4; }
+
+/* 三角測量の結果表示 */
+.triangulation-controls label[for*="tri-distance"] { grid-row: 3; }
+.triangulation-controls input[id*="tri-distance"] { grid-row: 3; }
+.triangulation-controls span[id*="tri-distanceValue"] { grid-row: 3; }
+.triangulation-controls .calc-result { grid-row: 4; } /* 4行目に結果 */
+
 
 /* ライティングデモ用の計算結果表示 */
 .demo-controls .calc-result {
