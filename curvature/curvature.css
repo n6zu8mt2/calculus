@@ -1,0 +1,208 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 解説セクション */
+#explanation {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+#explanation p { font-size: 1.05em; }
+#explanation .mjx-chtml {
+    text-align: center;
+    margin: 1.5em 0;
+}
+
+/* コントロールパネル */
+.controls-container {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.param-group {
+    display: flex;
+    flex-direction: column;
+}
+.param-group.slider-wide {
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.param-group label {
+    font-weight: bold;
+    color: #0d47a1;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.param-group select, .param-group input[type="number"] {
+    font-size: 1em;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.param-group input[type="range"] {
+    width: 100%;
+}
+.param-group span {
+    font-weight: bold;
+    color: #333;
+    text-align: right;
+}
+.hidden { display: none; }
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#playPauseBtn { background-color: #4caf50; }
+#playPauseBtn:hover { background-color: #388e3c; }
+#playPauseBtn.playing { background-color: #f44336; } /* 停止中（赤） */
+
+#resetBtn { background-color: #757575; }
+#resetBtn:hover { background-color: #616161; }
+
+/* ▼▼▼ 数式表示エリア ▼▼▼ */
+#formula-display {
+    margin: 15px 0;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    text-align: center;
+}
+#formula-display h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #555;
+}
+#formula-text {
+    font-size: 1.3em;
+    color: #333;
+}
+/* ▲▲▲ 追加ここまで ▲▲▲ */
+
+
+/* キャンバス */
+#canvas-holder {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* 情報パネル */
+#info-panel {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+}
+#info-panel h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+.info-item .label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: bold;
+}
+.info-item .value {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: #333;
+}
+
+/* 凡例 */
+.legend-container {
+    margin-top: 15px;
+    text-align: center;
+}
+.legend {
+    list-style: none;
+    padding: 0;
+    display: inline-flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.legend li {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+}
+.legend .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+    display: inline-block;
+}
+.legend .circle-legend {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #FF9800;
+    background: rgba(255, 152, 0, 0.2);
+    margin-right: 5px;
+    display: inline-block;
+}
+
+/* 戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}

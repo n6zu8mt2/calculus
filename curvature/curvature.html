@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パラメータ曲線と曲率円 | 動標構の視覚化</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="curvature.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>パラメータ曲線と曲率円</h1>
+                <p>〜動く点、回る座標系、接する円〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>曲率と動標構（フレネ枠） 📐</h2>
+                    <p>
+                        平面上の曲線がパラメータ $t$ を用いて $\mathbf{p}(t) = (x(t), y(t))$ と表されるとき、その曲線上の点における「曲がり具合」や「向き」を数学的に定義できます。
+                    </p>
+                    
+                    <h3>1. 動標構 (Moving Frame)</h3>
+                    <p>
+                        点 $\mathbf{p}(t)$ と共に動く、正規直交基底 $\{\mathbf{e}_1, \mathbf{e}_2\}$ を考えます。
+                    </p>
+                    <ul>
+                        <li><b>接線ベクトル ($\mathbf{e}_1$)</b>: 進行方向を向いた単位ベクトル。<br>
+                            速度ベクトル $\mathbf{v} = \mathbf{p}'(t)$ を用いて $\mathbf{e}_1(t) = \frac{\mathbf{p}'(t)}{|\mathbf{p}'(t)|}$ と表されます。
+                        </li>
+                        <li><b>法線ベクトル ($\mathbf{e}_2$)</b>: $\mathbf{e}_1$ を $90^\circ$ 回転させた単位ベクトル。<br>
+                            曲線の「曲がっていく内側」を向くように定義します。
+                        </li>
+                    </ul>
+
+                    <h3>2. 曲率の定義と図形的意味</h3>
+                    <p>
+                        曲率 $\kappa(t)$ は、「接線ベクトル $\mathbf{e}_1$ がどれくらいの速さで回転しているか」を表します。
+                        道のり（弧長）を $s$ とすると、$\frac{d\mathbf{e}_1}{ds} = \kappa \mathbf{e}_2$ が成り立ちます。
+                        これをパラメータ $t$ で書き直すと、以下の重要な関係式が得られます。
+                    </p>
+                    $$
+                    \frac{\mathbf{e}_1'(t)}{|\mathbf{p}'(t)|} = \kappa(t) \cdot \mathbf{e}_2(t)
+                    $$
+                    <p>
+                        <b>図形的な意味:</b>
+                        左辺の $\mathbf{e}_1'(t)$ は接線ベクトルの変化速度です。これを速さ $|\mathbf{p}'(t)|$ で割ることで「単位距離あたりの変化」に正規化しています。
+                        このベクトルは常に<b>法線方向 $\mathbf{e}_2$</b> を向いており、その大きさ（係数）が<b>曲率 $\kappa$</b> となります。
+                        <ul>
+                            <li>カーブがきついほど接線は急激に回転し、$\kappa$ は大きくなります。</li>
+                            <li>カーブがゆるいほど接線の回転は緩やかで、$\kappa$ は小さくなります。</li>
+                            <li>直線部分では接線は回転せず、$\kappa = 0$ となります。</li>
+                        </ul>
+                    </p>
+
+                    <h3>3. 曲率円と曲率半径</h3>
+                    <p>
+                        曲率 $\kappa$ の逆数の絶対値 $\rho = 1 / |\kappa|$ を<b>曲率半径</b>と呼びます。
+                        点 $\mathbf{p}(t)$ において、曲線に接し、かつその点での曲がり具合が等しい円を<b>曲率円</b>（または接触円）といいます。
+                    </p>
+                    <ul>
+                        <li><b>半径</b>: 曲率半径 $\rho$ に等しい円です。</li>
+                        <li><b>中心</b>: 点 $\mathbf{p}(t)$ から法線ベクトル $\mathbf{e}_2$ の方向に、距離 $\frac{1}{\kappa}$ だけ進んだ点にあります。<br>
+                        曲率円の中心 $\mathbf{c}$ は以下の式で表されます。
+                        $$ \mathbf{c} = \mathbf{p}(t) + \frac{1}{\kappa(t)} \mathbf{e}_2(t) $$
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>カーブがきついほど接線は急激に回転し、$\kappa$ は大きくなり、したがって曲率半径 $\rho = \frac{1}{|\kappa|}$ は小さくなります。</li>
+                        <li>カーブがゆるいほど接線の回転は緩やかで、$\kappa$ は小さくなり、したがって曲率半径 $\rho = \frac{1}{|\kappa|}$ は大きくなります。</li>
+                        <li>直線部分では接線は回転せず、$\kappa = 0$ となり、したがって曲率半径 $\rho = \frac{1}{|\kappa|}$ は無限大となります。</li>
+                    </ul>
+                    </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="curveSelector">曲線を選択:</label>
+                            <select id="curveSelector">
+                                <option value="circle">円 (Circle)</option>
+                                <option value="parabola">放物線 (Parabola)</option>
+                                <option value="ellipse">楕円 (Ellipse)</option>
+                                <option value="cycloid">サイクロイド (Cycloid)</option>
+                                <option value="clothoid">クロソイド曲線 (Clothoid)</option>
+                                <option value="cissoid">ディオクレスのシッソイド (Cissoid)</option>
+                                <option value="lissajous">リサージュ曲線 (Lissajous)</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label for="paramA">パラメータ $a$ (サイズ):</label>
+                            <input type="range" id="paramA" min="10" max="200" value="100">
+                            <span id="paramAVal">100</span>
+                        </div>
+                        <div class="param-group hidden" id="omega-group">
+                            <label for="paramOmega">角速度 $\omega$:</label>
+                            <input type="range" id="paramOmega" min="0.1" max="5.0" value="1.0" step="0.1">
+                            <span id="paramOmegaVal">1.0</span>
+                        </div>
+                        <div class="param-group slider-wide">
+                            <label for="tSlider">パラメータ $t$:</label>
+                            <input type="range" id="tSlider" step="0.01">
+                            <span id="tVal">0.00</span>
+                        </div>
+                        <div class="button-group">
+                            <button id="playPauseBtn">再生 / 停止</button>
+                            <button id="resetBtn">リセット</button>
+                        </div>
+                    </div>
+                    
+                    <div id="formula-display">
+                        <h3>現在の曲線: <span id="formula-text"></span></h3>
+                    </div>
+
+                    <div id="canvas-holder"></div>
+
+                    <div id="info-panel">
+                        <h3>現在の状態</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">座標 $P(t)$</span>
+                                <span class="value" id="val-pos">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label" style="color:#1E88E5">接線 $\mathbf{e}_1$</span>
+                                <span class="value" id="val-e1">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label" style="color:#E53935">法線 $\mathbf{e}_2$</span>
+                                <span class="value" id="val-e2">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">曲率 $\kappa$</span>
+                                <span class="value" id="val-kappa">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">曲率半径 $\rho$</span>
+                                <span class="value" id="val-rho">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="legend-container">
+                        <ul class="legend">
+                            <li><span class="dot" style="background:#000"></span> 曲線</li>
+                            <li><span class="dot" style="background:#1E88E5"></span> 接線ベクトル ($\mathbf{e}_1$)</li>
+                            <li><span class="dot" style="background:#E53935"></span> 法線ベクトル ($\mathbf{e}_2$)</li>
+                            <li><span class="circle-legend"></span> 曲率円</li>
+                        </ul>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="curvature.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

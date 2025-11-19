@@ -1,0 +1,180 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 解説セクション */
+#explanation {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+#explanation p { font-size: 1.05em; }
+#explanation .mjx-chtml {
+    text-align: center;
+    margin: 1.5em 0;
+}
+
+/* コントロールパネル */
+.controls-container {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.param-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.param-group label {
+    font-weight: bold;
+    color: #0d47a1;
+    min-width: 120px;
+}
+
+.param-group select, .param-group input {
+    font-size: 1.1em;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-width: 200px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+}
+
+.view-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+}
+.view-controls label {
+    font-weight: bold;
+    color: #555;
+}
+.view-controls small {
+    color: #777;
+    margin-left: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#nextBtn { background-color: #1e88e5; } /* 青 */
+#nextBtn:hover { background-color: #1565c0; }
+
+#autoBtn { background-color: #4caf50; } /* 緑 */
+#autoBtn:hover { background-color: #2e7d32; }
+
+#resetBtn { background-color: #f44336; } /* 赤 */
+#resetBtn:hover { background-color: #d32f2f; }
+
+/* 視点操作ボタンは少し控えめな色 */
+#zoomInBtn, #zoomOutBtn, #resetViewBtn {
+    background-color: #78909c;
+    padding: 8px 15px;
+    font-size: 0.9em;
+}
+#zoomInBtn:hover, #zoomOutBtn:hover, #resetViewBtn:hover {
+    background-color: #546e7a;
+}
+
+
+/* グラフ表示エリア */
+#canvas-holder {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    cursor: move; /* ドラッグ可能を示すカーソル */
+}
+
+/* 結果表示テーブル */
+#result-display {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#result-display h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.result-table th, .result-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.result-table th {
+    background-color: #f9f9f9;
+    width: 35%;
+    color: #333;
+    font-weight: bold;
+}
+
+.result-table td {
+    font-family: monospace;
+    font-size: 1.2em;
+}
+
+/* 戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}

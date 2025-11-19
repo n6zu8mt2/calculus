@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ベジェ曲線シミュレーター</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="bezier.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>ベジェ曲線シミュレーター</h1>
+                <p>〜滑らかな曲線を描く数学の魔法〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="intro">
+                    <h2>ベジェ曲線とは？ 🎨</h2>
+                    <p>
+                        ベジェ曲線（Bézier Curve）は、いくつかの「制御点」を使って滑らかな曲線を描く手法です。
+                        N個の点 $P_0, P_1, \dots, P_N$ があるとき、パラメータ $t$ ($0 \le t \le 1$) を動かして描かれる軌跡です。
+                    </p>
+                    <h3>現実世界への応用</h3>
+                    <ul>
+                        <li><b>フォント (Typography)</b>: PCで表示される文字（TrueTypeやOpenType）の輪郭はベジェ曲線で作られています。拡大してもギザギザにならないのはこのためです。</li>
+                        <li><b>ドローソフト (Illustrator, SVG)</b>: ベクトル画像のパスを描く際の「ペンツール」は、3次ベジェ曲線を繋ぎ合わせています。</li>
+                        <li><b>工業デザイン (CAD)</b>: 自動車の滑らかなボディラインの設計などに使われます（元々フランスの自動車会社ルノーのピエール・ベジェが考案しました）。</li>
+                        <li><b>アニメーション</b>: 動きの「加速・減速（イージング）」を制御するカーブとしても使われます。</li>
+                    </ul>
+                </section>
+
+                <section class="content-box">
+                    <h2>1. 1次ベジェ曲線 (Linear)</h2>
+                    <p>
+                        2点 $P_0, P_1$ を結ぶ線分です。パラメータ $t$ ($0 \to 1$) に応じて、$P_0$ から $P_1$ へ移動する点 $P_{01}(t)$ が描く軌跡です。
+                        これは単純な「線形補間 (Lerp)」です。
+                    </p>
+                    $$ P_{01}(t) = (1-t)P_0 + tP_1 $$
+                    <div class="canvas-container">
+                        <div id="canvas-linear"></div>
+                        <p class="instruction">点をドラッグして動かせます</p>
+                    </div>
+                </section>
+
+                <section class="content-box">
+                    <h2>2. 2次ベジェ曲線 (Quadratic)</h2>
+                    <p>
+                        3点 $P_0, P_1, P_2$ を使います。
+                        まず $P_0, P_1$ を $t:(1-t)$ に内分する点 $P_{01}$ と、
+                        $P_1, P_2$ を $t:(1-t)$ に内分する点 $P_{12}$ を作ります。
+                        さらに、その2点 $P_{01}, P_{12}$ を結ぶ線分を $t:(1-t)$ に内分する点 $P_{012}(t)$ が描く軌跡が2次ベジェ曲線です。
+                    </p>
+                    $$ P_{012}(t) = (1-t)P_{01}(t) + tP_{12}(t) = (1-t)^2 P_0 + 2(1-t)t P_1 + t^2 P_2 $$
+                    <div class="canvas-container">
+                        <div id="canvas-quadratic"></div>
+                        <p class="instruction">点をドラッグして動かせます。赤い点が描画点です。</p>
+                    </div>
+                </section>
+
+                <section class="content-box">
+                    <h2>3. 3次ベジェ曲線 (Cubic)</h2>
+                    <p>
+                        4点 $P_0, P_1, P_2, P_3$ を使います。ドローソフトで最も一般的に使われる形式です。
+                        「アンカーポイント（端点）」が $P_0, P_3$、「ハンドル（方向線）」が $P_0 \to P_1$ と $P_3 \to P_2$ に相当します。
+                    </p>
+                    <p>
+                        計算は再帰的に行われます。
+                        $P_{01}, P_{12}, P_{23}$ を作り、そこから $P_{012}, P_{123}$ を作り、最後に $P_{0123}(t)$ を求めます。
+                    </p>
+                    <div class="canvas-container">
+                        <div id="canvas-cubic"></div>
+                        <div class="controls">
+                            <label><input type="checkbox" id="chk-construction" checked> 補助線を表示 (ド・カステリョのアルゴリズム)</label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-box">
+                    <h2>4. N次ベジェ曲線 (General)</h2>
+                    <p>
+                        任意の個数の制御点に対するベジェ曲線です。
+                        制御点を増やせば増やすほど、計算コストは上がりますが、より複雑な形状を単一の式で表現できます。
+                        （実際には計算安定性のため、3次ベジェ曲線を複数つなげて使うことが一般的です）
+                    </p>
+                    <div class="canvas-container">
+                        <div id="canvas-n-degree"></div>
+                        <div class="controls">
+                            <button id="btn-add-point">制御点を追加 (+)</button>
+                            <button id="btn-remove-point">制御点を削除 (-)</button>
+                            <button id="btn-reset">リセット</button>
+                            <span id="point-count">次数: 4次 (点5個)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="back-link bottom">
+                    <a href="../index.html">← トップページに戻る</a>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="bezier.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

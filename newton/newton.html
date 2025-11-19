@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ニュートン法シミュレーター | 接線で解に迫る</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="newton.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>ニュートン法シミュレーター</h1>
+                <p>〜接線を使って方程式の解（ルートなど）を追い詰める〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>ニュートン法の仕組み 🍎</h2>
+                    <p>
+                        ニュートン法は、方程式 $f(x) = 0$ の解を数値的に求めるための強力なアルゴリズムです。
+                        関数 $y = f(x)$ が微分可能であるとき、初期値 $x_0$ から始めて、以下の漸化式で数列 $\{x_n\}$ を定義します。
+                    </p>
+                    $$
+                    x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+                    $$
+                    <h3>幾何学的な意味</h3>
+                    <p>
+                        この式は、グラフ上で次のような操作を繰り返すことを意味しています。
+                    </p>
+                    <ol>
+                        <li>点 $(x_n, f(x_n))$ における<b>接線</b>を引く。</li>
+                        <li>その接線と <b>$x$軸との交点</b> を $x_{n+1}$ とする。</li>
+                        <li>新しい $x_{n+1}$ から垂線を上げ、再び接線を引く…という操作を繰り返す。</li>
+                    </ol>
+                </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="funcSelector">関数 $f(x)$ を選ぶ:</label>
+                            <select id="funcSelector">
+                                <option value="sqrt2">f(x) = x² - 2 (√2 を求める)</option>
+                                <option value="sqrt3">f(x) = x² - 3 (√3 を求める)</option>
+                                <option value="sin">f(x) = sin(x) (π を求める)</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label for="startX">初期値 $x_0$:</label>
+                            <input type="number" id="startX" value="2.0" step="0.1">
+                        </div>
+                        <div class="button-group">
+                            <button id="nextBtn">次のステップへ ($x_{n+1}$)</button>
+                            <button id="autoBtn">自動再生</button>
+                            <button id="resetBtn">リセット</button>
+                        </div>
+                        <div class="view-controls">
+                             <label>視点操作:</label>
+                             <button id="zoomInBtn">拡大 (+)</button>
+                             <button id="zoomOutBtn">縮小 (-)</button>
+                             <button id="resetViewBtn">全体を表示</button>
+                             <small>※マウスホイールでのズーム、ドラッグでの移動も可能です</small>
+                        </div>
+                    </div>
+
+                    <div id="canvas-holder"></div>
+
+                    <div id="result-display">
+                        <h3>現在の状態: <span id="stepCountDisplay">\( n = 0 \)</span></h3>
+                        <table class="result-table">
+                            <tr>
+                                <th>現在の $x_n$</th>
+                                <td id="currentX">2.0000000000</td>
+                            </tr>
+                            <tr>
+                                <th>関数値 $f(x_n)$</th>
+                                <td id="currentFx">2.0000000000</td>
+                            </tr>
+                             <tr>
+                                <th>次の $x_{n+1}$</th>
+                                <td id="nextX" style="color: #e53935; font-weight:bold;">1.5000000000</td>
+                            </tr>
+                            <tr>
+                                <th>極限値 $\displaystyle \lim_{n \to \infty} x_n$</th>
+                                <td id="trueValue">1.41421356...</td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="newton.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
