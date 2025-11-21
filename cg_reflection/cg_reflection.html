@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGライティングの基礎 | ベクトルと光の反射</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="cg_reflection.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            macros: { bm: ["\\boldsymbol{#1}", 1] }
+          },
+          svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>CGライティングの基礎</h1>
+                <p>〜光の反射ベクトルを数学的に導出する〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="intro">
+                    <h2>なぜCGで「ベクトル」が必要なのか？ 🖥️</h2>
+                    <p>
+                        3DゲームやCGで金属の光沢や水面の反射がリアルに見えるのは、コンピュータが光の<b>「反射ベクトル」</b>を計算しているからです。
+                    </p>
+                    <ul>
+                        <li><b>入射ベクトル ($\boldsymbol{u}$)</b>: 光源から面に向かってくる光の向き。</li>
+                        <li><b>法線ベクトル ($\boldsymbol{h}$)</b>: 面の向き（垂直なベクトル）。</li>
+                        <li><b>反射ベクトル ($\boldsymbol{w}$)</b>: 面に当たって跳ね返った光の向き。</li>
+                    </ul>
+                </section>
+
+                <section id="theory">
+                    <h2>計算のロジック 📐</h2>
+                    <p>
+                        入射ベクトルを $\boldsymbol{u}$、面の法線ベクトルを $\boldsymbol{h}$ とします。
+                        反射ベクトル $\boldsymbol{w}$ は以下の手順で求められます。
+                    </p>
+                    
+                    <h3>Step 1: 法線ベクトルを求める</h3>
+                    <p>
+                        平面上の2つのベクトル $\boldsymbol{a}, \boldsymbol{b}$ の外積から、面に垂直な法線ベクトル $\boldsymbol{h}$ を求めます。
+                    </p>
+                    $$ \boldsymbol{h} = \boldsymbol{a} \times \boldsymbol{b} $$
+
+                    <h3>Step 2: 正射影ベクトルを求める</h3>
+                    <p>
+                        入射光 $\boldsymbol{u}$ が壁に当たって跳ね返る際、壁に垂直な成分（法線方向の成分）だけが反転します。
+                        この垂直成分 $\boldsymbol{v}$ を求めるために、入射光の逆ベクトル ($-\boldsymbol{u}$) を法線 $\boldsymbol{h}$ に<b>正射影</b>します。
+                    </p>
+                    $$ \boldsymbol{v} = \frac{(-\boldsymbol{u}) \cdot \boldsymbol{h}}{|\boldsymbol{h}|^2} \boldsymbol{h} $$
+                    
+                    <div class="diagram-container">
+                        <div id="projection-diagram-holder"></div>
+                        <p class="caption">図解: 入射ベクトル $\boldsymbol{u}$ と法線 $\boldsymbol{h}$ から垂直成分 $\boldsymbol{v}$ を求める</p>
+                    </div>
+
+                    <h3>Step 3: 反射ベクトルを求める</h3>
+                    <p>
+                        反射ベクトル $\boldsymbol{w}$ は、入射ベクトル $\boldsymbol{u}$ に「垂直成分 $\boldsymbol{v}$ の2倍」を足し合わせたものになります。
+                        これにより、光が壁の向こう側に突き抜けるのではなく、手前側に折り返されます。
+                    </p>
+                    $$ \boldsymbol{w} = \boldsymbol{u} + 2\boldsymbol{v} $$
+                    
+                    <div class="diagram-container">
+                        <div id="reflection-logic-diagram-holder"></div>
+                        <p class="caption">図解: $\boldsymbol{w} = \boldsymbol{u} + \boldsymbol{v} + \boldsymbol{v}$ のベクトル和</p>
+                    </div>
+                </section>
+
+                <section id="simulation">
+                    <h2>反射シミュレーター</h2>
+                    <p>
+                        入射光 $\boldsymbol{u}$ と平面の傾きを変更して、反射光 $\boldsymbol{w}$ がどう変化するか観察してみましょう。
+                        （ドラッグで視点を回転できます）
+                    </p>
+                    
+                    <div class="demo-container">
+                        <div id="canvas-holder"></div>
+                        <div class="controls">
+                            <h3>パラメータ設定</h3>
+                            
+                            <div class="param-group">
+                                <label>入射ベクトル $\boldsymbol{u}$:</label>
+                                <div class="vector-input">
+                                    x: <input type="number" id="mu-x" value="1" step="0.1">
+                                    y: <input type="number" id="mu-y" value="-1" step="0.1">
+                                    z: <input type="number" id="mu-z" value="0" step="0.1">
+                                </div>
+                            </div>
+                            
+                            <div class="param-group">
+                                <label>平面の法線 $\boldsymbol{h}$ (制御):</label>
+                                <div class="vector-input">
+                                    x: <input type="number" id="h-x" value="-1" step="0.1">
+                                    y: <input type="number" id="h-y" value="2" step="0.1">
+                                    z: <input type="number" id="h-z" value="-1" step="0.1">
+                                </div>
+                                <small>※計算時、法線は正規化(長さ1)して表示されます</small>
+                            </div>
+
+                            <div class="result-display">
+                                <h4>計算結果</h4>
+                                <p>反射ベクトル $\boldsymbol{w} \approx$ <span id="res-w" class="vec-val">(0.0, 1.0, -1.0)</span></p>
+                                <p>入射角 $\theta \approx$ <span id="res-theta" class="vec-val">60.0°</span></p>
+                            </div>
+
+                            <button id="resetBtn">リセット</button>
+                        </div>
+                    </div>
+                    
+                    <div class="legend-container">
+                        <ul class="legend">
+                            <li><span class="dot" style="background:#FFC107"></span> 入射光 ($\boldsymbol{u}$)</li>
+                            <li><span class="dot" style="background:#00E676"></span> 法線 ($\boldsymbol{h}$)</li>
+                            <li><span class="dot" style="background:#2979FF"></span> 正射影 ($\boldsymbol{v}$)</li>
+                            <li><span class="dot" style="background:#FF4081"></span> 反射光 ($\boldsymbol{w}$)</li>
+                        </ul>
+                    </div>
+
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="cg_reflection.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

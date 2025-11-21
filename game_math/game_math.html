@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームと内積 | 視界判定とバックアタック</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="game_math.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>ゲーム開発と数学：内積の応用</h1>
+                <p>〜「見つかった！」や「クリティカルヒット！」の裏側にある計算〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="intro">
+                    <h2>なぜゲームで「内積」を使うのか？ 🎮</h2>
+                    <p>
+                        高校数学で習うベクトルの<b>内積（Dot Product）</b>は、ゲームプログラミングにおいて「向き」の関係を調べるための最強のツールです。
+                        内積の定義式 $\vec{a} \cdot \vec{b} = |\vec{a}||\vec{b}|\cos\theta$ を変形すると、角度 $\cos\theta$ が求まります。
+                    </p>
+                    $$ \cos\theta = \frac{\vec{a} \cdot \vec{b}}{|\vec{a}||\vec{b}|} $$
+                    <p>
+                        コンピュータにとって「角度」を直接計算する処理（逆三角関数 $\arccos$ など）は重い処理ですが、内積（掛け算と足し算）は非常に高速です。
+                    </p>
+                </section>
+
+                <section class="content-box">
+                    <h2>1. 敵の「視界」判定（ステルスゲーム） 👁️</h2>
+                    <p>
+                        敵キャラクターの視界（扇形）の中にプレイヤーが入ったかどうかは、以下の<b>2つの条件</b>を両方満たすかどうかで判定します。
+                    </p>
+
+                    <h3>(A) 距離の判定（円の内側か？）</h3>
+                    <p>
+                        まず、プレイヤーが敵から一定の距離 $R$（視界の半径）以内にいるかを確認します。
+                        敵の位置 $E$ からプレイヤーの位置 $P$ へのベクトルを $\vec{v} = \overrightarrow{EP}$ とすると、条件は以下の通りです。
+                    </p>
+                    $$ |\vec{v}| \leqq R \quad (\text{計算上は } |\vec{v}|^2 \leqq R^2 \text{ でルート計算を避けるのが定石}) $$
+
+                    <h3>(B) 角度の判定（視野角の内側か？）</h3>
+                    <p>
+                        次に、敵の向いている方向 $\vec{u}$ と、プレイヤーへの方向 $\vec{v}$ のなす角 $\alpha$ が、視野角 $\theta$ の半分 $\frac{\theta}{2}$ 以下かを判定します。
+                    </p>
+                    $$
+                    \alpha \leqq \frac{\theta}{2} \iff \frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|} = \cos \alpha \geqq \cos \frac{\theta}{2}
+                    $$
+                    <p>
+                        ここで $\cos \alpha$ は内積を使って $\frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|}$ で求められます。
+                        つまり、内積の値が「閾値（$\cos \frac{\theta}{2}$）」より大きければ、視界に入っていることになります。
+                    </p>
+
+                    <div class="demo-container">
+                        <div id="stealth-canvas-holder"></div>
+                        <div class="demo-controls">
+                            <label for="fov-angle">視野角 ($\theta$):</label>
+                            <input type="range" id="fov-angle" min="10" max="180" value="60" step="1">
+                            <span id="fov-angle-val">60°</span>
+
+                            <label for="enemy-rotation">敵の向き ($\vec{u}$):</label>
+                            <input type="range" id="enemy-rotation" min="0" max="360" value="0" step="1">
+                            <span id="enemy-rotation-val">0°</span>
+                            
+                            <div class="calc-info">
+                                <div class="calc-item">
+                                    <span class="label">現在の $\cos \alpha$:</span>
+                                    <span class="value" id="current-cos">--</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="label">閾値 $\cos \frac{\theta}{2}$:</span>
+                                    <span class="value" id="threshold-cos">--</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="label">距離判定:</span>
+                                    <span class="value" id="dist-check">--</span>
+                                </div>
+                            </div>
+
+                            <div class="status-display" id="stealth-status">状態: 探索中...</div>
+                        </div>
+                    </div>
+                    <p class="instruction">マウスでプレイヤー（青い点）を動かしてみてください。</p>
+                </section>
+
+                <section class="content-box">
+                    <h2>2. 「背後からの攻撃」判定（アクション・RPG） ⚔️</h2>
+                    <p>
+                        「敵の背後から攻撃するとクリティカルヒット」という判定も、同様に距離と角度の条件で行います。
+                    </p>
+
+                    <h3>(A) 距離の判定（射程圏内か？）</h3>
+                    <p>
+                        まず、攻撃が届く範囲（射程距離 $R$）にいるかを確認します。
+                        敵からプレイヤーへのベクトル $\vec{v}$ の長さが $R$ 以下であれば、攻撃がヒットする可能性があります。
+                    </p>
+                    $$ |\vec{v}| \leqq R $$
+
+                    <h3>(B) 角度の判定（背後をとっているか？）</h3>
+                    <p>
+                        次に、敵の向き $\vec{u}$ と、敵から見たプレイヤーの方向 $\vec{v}$ のなす角 $\alpha$ を調べます。
+                        「背後」とは、正面方向とは逆側、つまり角度 $\alpha$ が大きい状態です。
+                        背後とみなす角度の範囲を $\beta$ とすると、真後ろ（$180^\circ$）から左右に $\frac{\beta}{2}$ ずつの範囲に入っていれば背後です。
+                    </p>
+                    $$
+                    180^\circ - \frac{\beta}{2} \leqq \alpha \leqq 180^\circ
+                    $$
+                    <p>
+                        これをコサインで考えると、角度が大きいほど値は小さくなるため、以下の不等式になります。
+                    </p>
+                    $$
+                    \cos \alpha \leqq \cos \left( 180^\circ - \frac{\beta}{2} \right)
+                    $$
+                    <p>
+                        つまり、内積の値が「閾値」より<b>小さい</b>場合に、背後からの攻撃（クリティカル）と判定されます。
+                    </p>
+
+                    <div class="demo-container">
+                        <div id="backstab-canvas-holder"></div>
+                        <div class="demo-controls">
+                            <label for="back-angle">背後判定角 ($\beta$):</label>
+                            <input type="range" id="back-angle" min="30" max="180" value="120" step="1">
+                            <span id="back-angle-val">120°</span>
+                            
+                            <div class="calc-info">
+                                <div class="calc-item">
+                                    <span class="label">現在の $\cos \alpha$:</span>
+                                    <span class="value" id="bs-current-cos">--</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="label">閾値 $\cos(180^\circ - \beta/2)$:</span>
+                                    <span class="value" id="bs-threshold-cos">--</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="label">距離判定:</span>
+                                    <span class="value" id="bs-dist-check">--</span>
+                                </div>
+                            </div>
+                            
+                            <div class="status-display" id="backstab-status">判定: 通常ダメージ</div>
+                        </div>
+                    </div>
+                    <p class="instruction">マウスでプレイヤー（剣アイコン）を動かして、敵の背後を狙ってください。</p>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game_math.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

@@ -39,7 +39,7 @@
                     <h2>ベジェ曲線とは？ 🎨</h2>
                     <p>
                         ベジェ曲線（Bézier Curve）は、いくつかの「制御点」を使って滑らかな曲線を描く手法です。
-                        N個の点 $P_0, P_1, \dots, P_N$ があるとき、パラメータ $t$ ($0 \le t \le 1$) を動かして描かれる軌跡です。
+                        N個の点 $P_0, P_1, \dots, P_N$ があるとき、パラメータ $t$  ($0 \leqq t \leqq 1$) を動かして描かれる軌跡です。
                     </p>
                     <h3>現実世界への応用</h3>
                     <ul>
@@ -48,6 +48,15 @@
                         <li><b>工業デザイン (CAD)</b>: 自動車の滑らかなボディラインの設計などに使われます（元々フランスの自動車会社ルノーのピエール・ベジェが考案しました）。</li>
                         <li><b>アニメーション</b>: 動きの「加速・減速（イージング）」を制御するカーブとしても使われます。</li>
                     </ul>
+                    <p>
+                        以下、$B_{n,i}(t) = {}_nC_i t^i (1-t)^{n-i}$ をベルンシュタイン基底関数と呼びます。例えば、$n=3$のとき、以下のようになる:
+                        \begin{align}
+                        B_{3,0}(t) &= (1-t)^3\\
+                        B_{3,1}(t) &= 3(1-t)^2 t\\
+                        B_{3,2}(t) &= 3(1-t) t^2\\
+                        B_{3,3}(t) &= t^3
+                        \end{align}
+                    </p>
                 </section>
 
                 <section class="content-box">
@@ -56,9 +65,19 @@
                         2点 $P_0, P_1$ を結ぶ線分です。パラメータ $t$ ($0 \to 1$) に応じて、$P_0$ から $P_1$ へ移動する点 $P_{01}(t)$ が描く軌跡です。
                         これは単純な「線形補間 (Lerp)」です。
                     </p>
-                    $$ P_{01}(t) = (1-t)P_0 + tP_1 $$
+                    \begin{align}
+                        P_{01}(t) &= (1-t)P_0 + tP_1 
+                        \\&= B_{1,0}(t) P_0 + B_{1,1}(t) P_1 
+                        \\&= {}_1C_0 (1-t) P_0 + {}_1C_1 t P_1
+                    \end{align}
                     <div class="canvas-container">
                         <div id="canvas-linear"></div>
+                        <div class="controls">
+                            <button id="btn-play-1">再生 / 停止</button>
+                            <label for="slider-t-1">t:</label>
+                            <input type="range" id="slider-t-1" min="0" max="1" step="0.005" value="0">
+                            <span id="val-t-1">0.00</span>
+                        </div>
                         <p class="instruction">点をドラッグして動かせます</p>
                     </div>
                 </section>
@@ -71,9 +90,22 @@
                         $P_1, P_2$ を $t:(1-t)$ に内分する点 $P_{12}$ を作ります。
                         さらに、その2点 $P_{01}, P_{12}$ を結ぶ線分を $t:(1-t)$ に内分する点 $P_{012}(t)$ が描く軌跡が2次ベジェ曲線です。
                     </p>
-                    $$ P_{012}(t) = (1-t)P_{01}(t) + tP_{12}(t) = (1-t)^2 P_0 + 2(1-t)t P_1 + t^2 P_2 $$
+                    $$
+                    \begin{align}
+                    P_{012}(t) &= (1-t)P_{01}(t) + tP_{12}(t) \\
+                    &= (1-t)^2 P_0 + 2(1-t)t P_1 + t^2 P_2 \\
+                    &= B_{2,0}(t) P_0 + B_{2,1}(t) P_1 + B_{2,2}(t) P_2 \\
+                    &= {}_2C_0 (1-t)^{2} P_0 + {}_2C_1 (1-t) t P_1 + {}_2C_2 t^{2} P_2
+                    \end{align}
+                    $$
                     <div class="canvas-container">
                         <div id="canvas-quadratic"></div>
+                        <div class="controls">
+                            <button id="btn-play-2">再生 / 停止</button>
+                            <label for="slider-t-2">t:</label>
+                            <input type="range" id="slider-t-2" min="0" max="1" step="0.005" value="0">
+                            <span id="val-t-2">0.00</span>
+                        </div>
                         <p class="instruction">点をドラッグして動かせます。赤い点が描画点です。</p>
                     </div>
                 </section>
@@ -88,10 +120,22 @@
                         計算は再帰的に行われます。
                         $P_{01}, P_{12}, P_{23}$ を作り、そこから $P_{012}, P_{123}$ を作り、最後に $P_{0123}(t)$ を求めます。
                     </p>
+                    $$
+                    \begin{align}
+                    P_{0123}(t) &= (1-t)P_{012}(t) + tP_{123}(t) \\
+                    &= (1-t)^3 P_0 + 3(1-t)^2 t P_1 + 3(1-t)t^2 P_2 + t^3 P_3 \\
+                    &= B_{3,0}(t) P_0 + B_{3,1}(t) P_1 + B_{3,2}(t) P_2 + B_{3,3}(t) P_3 \\
+                    &= {}_3C_0 (1-t)^{3} P_0 + {}_3C_1 (1-t)^{2} t P_1 + {}_3C_2 (1-t) t^{2} P_2 + {}_3C_3 t^{3} P_3 
+                    \end{align}
+                    $$
                     <div class="canvas-container">
                         <div id="canvas-cubic"></div>
                         <div class="controls">
-                            <label><input type="checkbox" id="chk-construction" checked> 補助線を表示 (ド・カステリョのアルゴリズム)</label>
+                            <button id="btn-play-3">再生 / 停止</button>
+                            <label for="slider-t-3">t:</label>
+                            <input type="range" id="slider-t-3" min="0" max="1" step="0.005" value="0">
+                            <span id="val-t-3">0.00</span>
+                            <label class="checkbox-label"><input type="checkbox" id="chk-construction" checked> 補助線を表示</label>
                         </div>
                     </div>
                 </section>
@@ -103,8 +147,21 @@
                         制御点を増やせば増やすほど、計算コストは上がりますが、より複雑な形状を単一の式で表現できます。
                         （実際には計算安定性のため、3次ベジェ曲線を複数つなげて使うことが一般的です）
                     </p>
+                    $$
+                    \begin{align}
+                    P_{0\dots n}(t) &= (1-t)P_{0\dots n-1}(t) + tP_{1\dots n}(t) \\
+                    &= \sum_{i=0}^{n} B_{n,i}(t) P_i \\
+                    &= \sum_{i=0}^{n} {}_nC_i t^i (1-t)^{n-i} P_i
+                    \end{align}
+                    $$
                     <div class="canvas-container">
                         <div id="canvas-n-degree"></div>
+                        <div class="controls">
+                            <button id="btn-play-n">再生 / 停止</button>
+                            <label for="slider-t-n">t:</label>
+                            <input type="range" id="slider-t-n" min="0" max="1" step="0.005" value="0">
+                            <span id="val-t-n">0.00</span>
+                        </div>
                         <div class="controls">
                             <button id="btn-add-point">制御点を追加 (+)</button>
                             <button id="btn-remove-point">制御点を削除 (-)</button>

@@ -65,22 +65,50 @@ class DraggablePoint {
 const sketchLinear = (p) => {
     let pts = [];
     let t = 0;
+    let isPlaying = false;
+    
+    let sliderT, valT, btnPlay;
 
     p.setup = () => {
         let canvas = p.createCanvas(600, 200);
         canvas.parent('canvas-linear');
+        
+        // UI取得
+        sliderT = p.select('#slider-t-1');
+        valT = p.select('#val-t-1');
+        btnPlay = p.select('#btn-play-1');
+
+        // イベント
+        sliderT.input(() => {
+            t = parseFloat(sliderT.value());
+            isPlaying = false; // 手動操作時は停止
+            btnPlay.removeClass('playing');
+        });
+        btnPlay.mousePressed(togglePlay);
+
         // 初期点 P0, P1
         pts.push(new DraggablePoint(p, 100, 150, "P0"));
         pts.push(new DraggablePoint(p, 500, 50, "P1"));
+        
+        // 初期再生
+        togglePlay();
     };
+    
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) btnPlay.addClass('playing');
+        else btnPlay.removeClass('playing');
+    }
 
     p.draw = () => {
         p.background(255);
         
-        // 時間tの更新 (0 -> 1 -> 0 のループ)
-        t = (p.millis() % 4000) / 4000; 
-        if (t > 0.5) t = 1.0 - (t - 0.5); // 折り返し
-        t *= 2; // 0-1-0 に正規化
+        if (isPlaying) {
+            t += 0.005;
+            if (t > 1) t = 0;
+            sliderT.value(t);
+        }
+        valT.html(t.toFixed(2));
 
         // 線分描画
         p.stroke(200); p.strokeWeight(2);
@@ -111,20 +139,47 @@ const sketchLinear = (p) => {
 const sketchQuadratic = (p) => {
     let pts = [];
     let t = 0;
+    let isPlaying = false;
+    
+    let sliderT, valT, btnPlay;
 
     p.setup = () => {
         let canvas = p.createCanvas(600, 300);
         canvas.parent('canvas-quadratic');
+        
+        sliderT = p.select('#slider-t-2');
+        valT = p.select('#val-t-2');
+        btnPlay = p.select('#btn-play-2');
+
+        sliderT.input(() => {
+            t = parseFloat(sliderT.value());
+            isPlaying = false;
+            btnPlay.removeClass('playing');
+        });
+        btnPlay.mousePressed(togglePlay);
+
         pts.push(new DraggablePoint(p, 100, 250, "P0"));
         pts.push(new DraggablePoint(p, 300, 50, "P1"));
         pts.push(new DraggablePoint(p, 500, 250, "P2"));
+
+        togglePlay();
     };
+    
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) btnPlay.addClass('playing');
+        else btnPlay.removeClass('playing');
+    }
 
     p.draw = () => {
         p.background(255);
         
-        // アニメーション用 t
-        t = (p.millis() % 5000) / 5000;
+        if (isPlaying) {
+            t += 0.005;
+            if (t > 1) t = 0;
+            sliderT.value(t);
+        }
+        valT.html(t.toFixed(2));
 
         // 制御線 (ハンドル)
         p.stroke(200); p.strokeWeight(1);
@@ -135,8 +190,6 @@ const sketchQuadratic = (p) => {
         p.noFill(); p.stroke(30, 136, 229); p.strokeWeight(3);
         p.beginShape();
         for (let i = 0; i <= 1; i += 0.02) {
-            let x = p.bezierPoint(pts[0].pos.x, pts[1].pos.x, pts[1].pos.x, pts[2].pos.x, i); // p5のbezierPointは3次用なので工夫が必要だが、数式で書く
-            // 2次ベジェの数式: (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
             let b0 = (1-i)*(1-i);
             let b1 = 2*(1-i)*i;
             let b2 = i*i;
@@ -147,7 +200,6 @@ const sketchQuadratic = (p) => {
         p.endShape();
 
         // ド・カステリョのアルゴリズム可視化
-        // 第1段階
         let p01 = p5.Vector.lerp(pts[0].pos, pts[1].pos, t);
         let p12 = p5.Vector.lerp(pts[1].pos, pts[2].pos, t);
         
@@ -168,10 +220,9 @@ const sketchQuadratic = (p) => {
         p.text("P12", p12.x, p12.y-10);
         p.text("P012(t)", p012.x+10, p012.y);
 
-        // 制御点の描画
-        pts[0].display(true); // Anchor
-        pts[1].display(false); // Handle
-        pts[2].display(true); // Anchor
+        pts[0].display(true);
+        pts[1].display(false);
+        pts[2].display(true);
         pts.forEach(pt => pt.update());
     };
 
@@ -184,22 +235,49 @@ const sketchQuadratic = (p) => {
 const sketchCubic = (p) => {
     let pts = [];
     let t = 0;
-    let chkConstruction;
+    let isPlaying = false;
+    
+    let sliderT, valT, btnPlay, chkConstruction;
 
     p.setup = () => {
         let canvas = p.createCanvas(600, 350);
         canvas.parent('canvas-cubic');
+        
+        sliderT = p.select('#slider-t-3');
+        valT = p.select('#val-t-3');
+        btnPlay = p.select('#btn-play-3');
         chkConstruction = p.select('#chk-construction');
+
+        sliderT.input(() => {
+            t = parseFloat(sliderT.value());
+            isPlaying = false;
+            btnPlay.removeClass('playing');
+        });
+        btnPlay.mousePressed(togglePlay);
 
         pts.push(new DraggablePoint(p, 50, 300, "P0"));
         pts.push(new DraggablePoint(p, 150, 50, "P1"));
         pts.push(new DraggablePoint(p, 450, 50, "P2"));
         pts.push(new DraggablePoint(p, 550, 300, "P3"));
+        
+        togglePlay();
     };
+    
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) btnPlay.addClass('playing');
+        else btnPlay.removeClass('playing');
+    }
 
     p.draw = () => {
         p.background(255);
-        t = (p.millis() % 6000) / 6000;
+        
+        if (isPlaying) {
+            t += 0.003; // 少しゆっくり
+            if (t > 1) t = 0;
+            sliderT.value(t);
+        }
+        valT.html(t.toFixed(2));
 
         // 制御線
         p.stroke(200); p.strokeWeight(1);
@@ -207,7 +285,7 @@ const sketchCubic = (p) => {
         p.line(pts[1].pos.x, pts[1].pos.y, pts[2].pos.x, pts[2].pos.y);
         p.line(pts[2].pos.x, pts[2].pos.y, pts[3].pos.x, pts[3].pos.y);
 
-        // ベジェ曲線 (p5の関数使用)
+        // ベジェ曲線
         p.noFill(); p.stroke(30, 136, 229); p.strokeWeight(3);
         p.bezier(pts[0].pos.x, pts[0].pos.y, pts[1].pos.x, pts[1].pos.y, pts[2].pos.x, pts[2].pos.y, pts[3].pos.x, pts[3].pos.y);
 
@@ -241,7 +319,6 @@ const sketchCubic = (p) => {
             p.text("P0123(t)", pFinal.x + 10, pFinal.y);
         }
 
-        // 制御点
         pts[0].display(true);
         pts[1].display(false);
         pts[2].display(false);
@@ -258,6 +335,9 @@ const sketchCubic = (p) => {
 const sketchNDegree = (p) => {
     let pts = [];
     let t = 0;
+    let isPlaying = false;
+
+    let sliderT, valT, btnPlay;
     let btnAdd, btnRemove, btnReset;
     let spanCount;
 
@@ -265,17 +345,35 @@ const sketchNDegree = (p) => {
         let canvas = p.createCanvas(600, 400);
         canvas.parent('canvas-n-degree');
         
+        sliderT = p.select('#slider-t-n');
+        valT = p.select('#val-t-n');
+        btnPlay = p.select('#btn-play-n');
+        
         btnAdd = p.select('#btn-add-point');
         btnRemove = p.select('#btn-remove-point');
         btnReset = p.select('#btn-reset');
         spanCount = p.select('#point-count');
+
+        sliderT.input(() => {
+            t = parseFloat(sliderT.value());
+            isPlaying = false;
+            btnPlay.removeClass('playing');
+        });
+        btnPlay.mousePressed(togglePlay);
 
         btnAdd.mousePressed(addPoint);
         btnRemove.mousePressed(removePoint);
         btnReset.mousePressed(resetPoints);
 
         resetPoints(); // 初期化
+        togglePlay();
     };
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) btnPlay.addClass('playing');
+        else btnPlay.removeClass('playing');
+    }
 
     function resetPoints() {
         pts = [];
@@ -310,7 +408,6 @@ const sketchNDegree = (p) => {
     }
 
     // 再帰的なド・カステリョアルゴリズム
-    // points: ベクトル配列, t: 時間
     function deCasteljau(points, t) {
         if (points.length === 1) {
             return points[0];
@@ -319,9 +416,9 @@ const sketchNDegree = (p) => {
         let nextPoints = [];
         for (let i = 0; i < points.length - 1; i++) {
             // 線を描画 (補助線)
-            if (points.length === pts.length) { // 最初のレベルだけグレー
+            if (points.length === pts.length) { // 最初のレベル
                  p.stroke(220); p.strokeWeight(1);
-            } else { // 中間レベルは薄い緑
+            } else { // 中間レベル
                  p.stroke(100, 200, 100, 100); p.strokeWeight(1);
             }
             p.line(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
@@ -332,7 +429,7 @@ const sketchNDegree = (p) => {
             nextPoints.push(p.createVector(x, y));
             
             // 補間点の描画
-            if (points.length < pts.length) { // 最初の制御点以外
+            if (points.length < pts.length) {
                 p.fill(100, 200, 100); p.noStroke();
                 p.ellipse(x, y, 4, 4);
             }
@@ -342,15 +439,17 @@ const sketchNDegree = (p) => {
 
     p.draw = () => {
         p.background(255);
-        t = (p.millis() % 8000) / 8000; // 少しゆっくり
+        
+        if (isPlaying) {
+            t += 0.003;
+            if (t > 1) t = 0;
+            sliderT.value(t);
+        }
+        valT.html(t.toFixed(2));
 
-        // 1. まずベジェ曲線の軌跡を描画 (サンプリング)
+        // 1. 軌跡 (サンプリング)
         p.noFill(); p.stroke(30, 136, 229); p.strokeWeight(3);
         p.beginShape();
-        // ベジェ曲線の計算は重いので、解像度を落として描画
-        // (正確にはDe CasteljauではなくBernstein基底関数を使う方が高速だが、
-        //  教育的なのでDe Casteljauのロジックを流用するか、単純にサンプルする)
-        // ここでは単純化のため、現在の制御点位置からBernsteinで計算
         let steps = 100;
         for (let i = 0; i <= steps; i++) {
             let tt = i / steps;
@@ -375,7 +474,7 @@ const sketchNDegree = (p) => {
         });
     };
 
-    // バーンスタイン基底関数によるベジェ曲線計算 (軌跡描画用)
+    // バーンスタイン基底関数によるベジェ曲線計算
     function evaluateBezier(points, t) {
         let n = points.length - 1;
         let x = 0;
@@ -388,7 +487,6 @@ const sketchNDegree = (p) => {
         return p.createVector(x, y);
     }
 
-    // 組み合わせ nCr
     function combinations(n, r) {
         if (r < 0 || r > n) return 0;
         if (r === 0 || r === n) return 1;

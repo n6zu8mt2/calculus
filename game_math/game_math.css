@@ -1,0 +1,193 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 導入セクション */
+#intro {
+    background-color: #f4f8ff;
+    border: 1px solid #d4e3fb;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    font-size: 1.05em;
+    line-height: 1.8;
+}
+#intro b { font-weight: bold; }
+
+/* コンテンツボックス */
+.content-box {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1px 20px 20px 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.content-box h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-top: 20px;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 5px;
+}
+
+/* 数式中央揃え */
+.mjx-chtml {
+    text-align: center;
+    margin: 15px 0;
+}
+
+/* デモコンテナ */
+.demo-container {
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* キャンバスホルダー */
+#stealth-canvas-holder,
+#backstab-canvas-holder {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: crosshair;
+    flex-shrink: 0;
+}
+
+/* コントロールパネル */
+.demo-controls {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    min-width: 280px;
+    flex: 1;
+}
+
+.demo-controls label {
+    font-weight: bold;
+    text-align: right;
+    font-size: 0.9em;
+}
+.demo-controls input[type="range"] {
+    width: 100%;
+}
+.demo-controls span {
+    font-family: monospace;
+    font-weight: bold;
+    color: #0d47a1;
+    width: 40px;
+    text-align: right;
+}
+
+/* ▼▼▼ 計算値表示エリアのスタイル ▼▼▼ */
+.calc-info {
+    grid-column: 1 / -1;
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    display: grid;
+    gap: 5px;
+}
+.calc-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95em;
+    border-bottom: 1px dotted #eee;
+}
+.calc-item:last-child { border-bottom: none; }
+.calc-item .label {
+    color: #666;
+}
+.calc-item .value {
+    font-family: monospace;
+    font-weight: bold;
+    color: #333;
+    width: auto;
+}
+/* ▲▲▲ 追加ここまで ▲▲▲ */
+
+/* ステータス表示 */
+.status-display {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    background-color: #eee;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.status-found {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 2px solid #c62828;
+    animation: pulse 0.5s infinite alternate;
+}
+
+.status-critical {
+    background-color: #fff8e1;
+    color: #ff8f00;
+    border: 2px solid #ff8f00;
+    animation: shake 0.3s;
+}
+
+.status-safe {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+}
+
+.instruction {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    text-align: center;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.02); }
+}
+
+@keyframes shake {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-2px, 0); }
+    75% { transform: translate(2px, 0); }
+    100% { transform: translate(0, 0); }
+}
+
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}
