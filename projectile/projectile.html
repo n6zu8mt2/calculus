@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜方投射シミュレーター | 運動の分解</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="projectile.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>斜方投射シミュレーター</h1>
+                <p>〜速度と位置の時間変化をグラフで見る〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>運動方程式と解法 📚</h2>
+                    <p>
+                        初速 $v_0$、角度 $\theta$ で投げ出された物体の運動を考えます。空気抵抗は無視し、重力加速度を $g = 9.8 \, \text{m/s}^2$ とします。
+                    </p>
+                    <div class="equation-box">
+                        <div class="columns">
+                            <div>
+                                <h4>水平方向 ($x$)：等速直線運動</h4>
+                                <p><b>運動方程式:</b> $m x''(t) = 0$</p>
+                                <p><b>速度:</b> $x'(t) = v_0 \cos\theta$</p>
+                                <p><b>位置:</b> $x(t) = (v_0 \cos\theta) t$</p>
+                            </div>
+                            <div>
+                                <h4>鉛直方向 ($y$)：等加速度運動</h4>
+                                <p><b>運動方程式:</b> $m y''(t) = -mg$</p>
+                                <p><b>速度:</b> $y'(t) = v_0 \sin\theta - gt$</p>
+                                <p><b>位置:</b> $y(t) = (v_0 \sin\theta) t - \dfrac{1}{2}gt^2$</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    
+                    <div class="simulation-layout">
+                        
+                        <div class="left-panel">
+                            <div class="panel-card controls-container">
+                                <h3>設定</h3>
+                                <div class="param-group">
+                                    <label for="v0-input">初速 $v_0$:</label>
+                                    <div class="input-with-unit">
+                                        <input type="number" id="v0-input" value="20" step="1" min="0">
+                                        <select id="unit-select">
+                                            <option value="ms">m/s (秒速)</option>
+                                            <option value="kmh">km/h (時速)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="param-group">
+                                    <label for="theta-input">角度 $\theta$:</label>
+                                    <input type="range" id="theta-slider" min="0" max="90" value="45" step="1">
+                                    <div class="input-with-unit">
+                                        <input type="number" id="theta-input" value="45" min="0" max="90">
+                                        <span>度</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-card" id="numerical-formulas">
+                                <h3>現在の式 (数値代入後)</h3>
+                                <div id="dynamic-equations">
+                                    計算中...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="right-panel">
+                            <div class="panel-card">
+                                <h3>軌跡 $y$ vs $x$ (アニメーション)</h3>
+                                <div id="trajectory-canvas-holder"></div>
+                                
+                                <div class="time-control">
+                                    <label for="time-slider">時間 $t$:</label>
+                                    <input type="range" id="time-slider" min="0" max="100" value="0" step="1">
+                                    <span id="current-time-display">t = 0.00 s</span>
+                                    <div class="anim-buttons">
+                                        <button id="anim-play-btn">再生</button>
+                                        <button id="anim-reset-btn">時間リセット</button>
+                                    </div>
+                                </div>
+
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <span class="label">最高点への到達時刻</span>
+                                        <span class="value" id="stat-t-peak">-- s</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">最高点の高さ</span>
+                                        <span class="value" id="stat-h-max">-- m</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">地面への到達時刻</span>
+                                        <span class="value" id="stat-t-land">-- s</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="label">飛距離 (水平到達距離)</span>
+                                        <span class="value" id="stat-x-max">-- m</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="graphs-container">
+                        <div class="graph-box">
+                            <h3>詳細: 速度の時間変化 $(x', y')$</h3>
+                            <div id="velocity-canvas-holder"></div>
+                            <ul class="legend">
+                                <li><span class="dot" style="background:#1E88E5"></span> 水平速度 $x'(t)$ (青線)</li>
+                                <li><span class="dot" style="background:#E53935"></span> 鉛直速度 $y'(t)$ (赤線)</li>
+                            </ul>
+                            <p class="graph-caption">横軸: 時間 $t$ [s] / 縦軸: 速度 [m/s]</p>
+                        </div>
+                        <div class="graph-box">
+                            <h3>詳細: 位置の時間変化 $(x, y)$</h3>
+                            <div id="position-canvas-holder"></div>
+                            <ul class="legend">
+                                <li><span class="dot" style="background:#1E88E5"></span> 水平位置 $x(t)$ (青線)</li>
+                                <li><span class="dot" style="background:#E53935"></span> 鉛直位置 $y(t)$ (赤線)</li>
+                            </ul>
+                            <p class="graph-caption">横軸: 時間 $t$ [s] / 縦軸: 位置 [m]</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="projectile.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
