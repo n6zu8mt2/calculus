@@ -3,17 +3,17 @@ body {
     font-family: 'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
     line-height: 1.7;
     color: #333;
-    background-color: #f0f4f8; /* 背景を少し青みがかったグレーに */
+    background-color: #f0f4f8;
     margin: 0;
     padding: 0;
 }
 
 h1, h2, h3 {
-    color: #0d47a1; /* メインカラーを濃い青に統一 */
+    color: #0d47a1;
 }
 
 a {
-    color: #1e88e5; /* リンク色を青に */
+    color: #1e88e5;
     text-decoration: none;
 }
 
@@ -23,7 +23,7 @@ a:hover {
 
 /* --- 2カラムレイアウト --- */
 .page-wrapper {
-    display: flex; /* Make it a flex container */
+    display: flex;
     max-width: 1200px;
     margin: 0 auto;
     background-color: #fff;
@@ -31,25 +31,34 @@ a:hover {
 }
 
 /* --- サイドバー --- */
-/* Style loaded from sidebar.html */
 .sidebar {
-    width: 150px; /* ▼▼▼ 幅を狭く変更 (例: 280px -> 220px) ▼▼▼ */
-    background-color: #e3f2fd; /* Sidebar background color */
+    width: 220px;
+    background-color: #e3f2fd;
     padding: 20px;
     border-right: 1px solid #bbdefb;
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
-    height: 100vh; /* Make sidebar full height */
-    position: sticky; /* Keep sidebar visible when scrolling */
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
     top: 0;
-    overflow-y: auto; /* Allow sidebar content to scroll if needed */
+    overflow-y: auto;
 }
 
 .sidebar h2 {
-    font-size: 1.4em; /* ▼ 見出しも少し小さく */
+    font-size: 1.4em;
     border-bottom: 2px solid #90caf9;
     padding-bottom: 10px;
     margin-top: 0;
-    color: #0d47a1; /* Match main content h2 color */
+    color: #0d47a1;
+}
+
+/* ▼▼▼ サイドバーのカテゴリ見出し ▼▼▼ */
+.sidebar h3 {
+    font-size: 1.1em;
+    color: #1565c0;
+    margin-top: 25px;
+    margin-bottom: 5px;
+    border-left: 3px solid #64b5f6;
+    padding-left: 8px;
 }
 
 .sidebar ul {
@@ -60,28 +69,28 @@ a:hover {
 
 .sidebar li a {
     display: block;
-    padding: 8px 12px; /* ▼ パディングも少し調整 */
+    padding: 6px 12px;
     border-radius: 5px;
     transition: background-color 0.2s;
-    color: #1e88e5; /* Link color */
+    color: #333; /* リンク色を少し落ち着かせる */
     text-decoration: none;
-    font-size: 0.9em; /* ▼▼▼ 文字サイズを小さく ▼▼▼ */
+    font-size: 0.9em;
 }
 
 .sidebar li a:hover {
     background-color: #bbdefb;
+    color: #0d47a1;
     text-decoration: none;
 }
 
 
 /* --- メインコンテンツ --- */
 .main-content {
-    flex-grow: 1; /* Allow main content to take remaining space */
+    flex-grow: 1;
     padding: 20px 40px;
-    min-width: 0; /* Prevents flexbox overflow issues */
+    min-width: 0;
 }
 
-/* Adjust header and main h2 if needed, these might already exist */
 .main-content .header {
     text-align: center;
     border-bottom: 3px double #4a90e2;
@@ -95,7 +104,7 @@ a:hover {
     color: #0d47a1;
 }
 
-main h2 { /* Ensure consistent h2 style */
+main h2 {
     font-size: 1.8em;
     color: #0d47a1;
     border-left: 5px solid #4a90e2;
@@ -103,5 +112,46 @@ main h2 { /* Ensure consistent h2 style */
     margin-top: 40px;
 }
 
-/* ▼▼▼ 旧スタイル（重複部分）を削除 ▼▼▼ */
-/* .container h2, .container h3, .container p などの古いスタイルは不要なら削除 */
+/* ▼▼▼ トップページ(index.html)用のスタイル ▼▼▼ */
+.category-section {
+    margin-bottom: 50px;
+}
+
+.category-section h2 {
+    font-size: 1.6em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* グリッド表示 */
+    gap: 20px;
+}
+
+.link-item {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.link-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.link-item h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.link-item p {
+    font-size: 0.95em;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
