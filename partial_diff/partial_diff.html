@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>偏微分シミュレーター | 幾何学的意味の可視化</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="partial_diff.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>偏微分シミュレーター</h1>
+                <p>〜グラフを「切って」傾きを見る〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>偏微分の幾何学的意味 📐</h2>
+                    <p>
+                        2変数関数 $z = f(x, y)$ の偏微分係数 $f_x(a, b)$ と $f_y(a, b)$ は、$z = f(x, y)$ のグラフ（曲面）上の一点における「ある方向への傾き」を表しています。
+                    </p>
+                    
+                    <div class="explanation-grid">
+                        <div class="exp-item">
+                            <h3>$x$ での偏微分: $f_x(a, b)$</h3>
+                            <p>
+                                平面 $y = b$ で曲面を切断したときの断面曲線 $z = f(x, b)$ の、$x=a$ における<b>接線の傾き</b>です。
+                            </p>
+                            $$ f_x(a, b) = \lim_{h \to 0} \frac{f(a+h, b) - f(a, b)}{h} $$
+                        </div>
+                        <div class="exp-item">
+                            <h3>$y$ での偏微分: $f_y(a, b)$</h3>
+                            <p>
+                                平面 $x = a$ で曲面を切断したときの断面曲線 $z = f(a, y)$ の、$y=b$ における<b>接線の傾き</b>です。
+                            </p>
+                            $$ f_y(a, b) = \lim_{h \to 0} \frac{f(a, b+h) - f(a, b)}{h} $$
+                        </div>
+                    </div>
+
+                    <div class="equation-box">
+                        <h3>接平面の方程式</h3>
+                        <p>
+                            点 $(a, b, f(a,b))$ において、$z = f(x, y)$ のグラフ（曲面）に接する平面を<b>接平面</b>といいます。
+                            偏微分係数を用いると、接平面の方程式は次のように表されます。
+                        </p>
+                        $$ z = f(a,b) + f_x(a,b)(x-a) + f_y(a,b)(y-b) $$
+                        <p>
+                            これは、1変数関数の接線の方程式 $y = f(a) + f'(a)(x-a)$ を2変数に拡張したものと捉えることができます。
+                        </p>
+                    </div>
+                    </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    <div class="controls-container">
+                        <div class="param-group">
+                            <label for="funcSelector">関数 $f(x,y)$:</label>
+                            <select id="funcSelector">
+                                <option value="wave">波形: sin(x) + cos(y)</option>
+                                <option value="parabola">放物面: (x^2 + y^2)/4</option>
+                                <option value="saddle">鞍点 (サドル): (x^2 - y^2)/4</option>
+                                <option value="hills">連山: sin(x)*cos(y)</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label>点 $(a, b)$ の位置:</label>
+                            <div class="slider-row">
+                                <span>$a$:</span>
+                                <input type="range" id="sliderA" min="-3.14" max="3.14" step="0.1" value="0">
+                                <span id="valA">0.0</span>
+                            </div>
+                            <div class="slider-row">
+                                <span>$b$:</span>
+                                <input type="range" id="sliderB" min="-3.14" max="3.14" step="0.1" value="0">
+                                <span id="valB">0.0</span>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label><input type="checkbox" id="checkX" checked> <span style="color:#1E88E5; font-weight:bold;">x偏微分 ($y=b$ で切断)</span> を表示</label>
+                            <label><input type="checkbox" id="checkY" checked> <span style="color:#E53935; font-weight:bold;">y偏微分 ($x=a$ で切断)</span> を表示</label>
+                            <label><input type="checkbox" id="checkTangent" checked> <span style="color:#FF9800; font-weight:bold;">接平面</span> を表示</label>
+                        </div>
+                    </div>
+
+                    <div class="canvas-box">
+                        <h3>3D空間: $z = f(x, y)$ のグラフと切断面・接平面</h3>
+                        <p class="instruction">ドラッグで視点を回転できます</p>
+                        <div id="canvas3d-holder"></div>
+                    </div>
+
+                    <div class="cross-section-container">
+                        <div class="canvas-box" id="box-fx">
+                            <h3 style="color:#1E88E5;">断面 $y=b$ ($x$-$z$平面)</h3>
+                            <div id="canvas2dx-holder"></div>
+                            <div class="slope-info">
+                                接線の傾き $f_x(a,b) =$ <span id="val-slope-x">--</span>
+                            </div>
+                        </div>
+                        <div class="canvas-box" id="box-fy">
+                            <h3 style="color:#E53935;">断面 $x=a$ ($y$-$z$平面)</h3>
+                            <div id="canvas2dy-holder"></div>
+                            <div class="slope-info">
+                                接線の傾き $f_y(a,b) =$ <span id="val-slope-y">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="partial_diff.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
