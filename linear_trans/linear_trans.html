@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線形変換シミュレーター | 行列と幾何学</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="linear_trans.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>線形変換シミュレーター</h1>
+                <p>〜行列 $A$ による空間の歪みを視覚化する〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>線形変換とは 📐</h2>
+                    <p>
+                        2次元ベクトル $\vec{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ を、行列 $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ を用いて別のベクトル $\vec{x}' = \begin{pmatrix} x' \\ y' \end{pmatrix}$ に移す変換を<b>線形変換</b>といいます。
+                    </p>
+                    $$ \begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = x \begin{pmatrix} a \\ c \end{pmatrix} + y \begin{pmatrix} b \\ d \end{pmatrix} $$
+                    <p>
+                        この式は、基本ベクトル $\vec{e}_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$ が $\begin{pmatrix} a \\ c \end{pmatrix}$ に、$\vec{e}_2 = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ が $\begin{pmatrix} b \\ d \end{pmatrix}$ に移されることを意味しています。つまり、<b>「変換後の基底ベクトルの行き先」が行列の列を作っています</b>。
+                    </p>
+                </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    
+                    <div class="controls-container">
+                        <div class="matrix-control-group">
+                            <div class="matrix-display">
+                                <label>行列 $A = $</label>
+                                <div class="matrix-brackets">
+                                    <div class="matrix-row">
+                                        <div class="matrix-cell">
+                                            <input type="number" id="mat-a" value="2" step="0.1">
+                                            <input type="range" id="slider-a" min="-3" max="3" step="0.1" value="2">
+                                        </div>
+                                        <div class="matrix-cell">
+                                            <input type="number" id="mat-b" value="1" step="0.1">
+                                            <input type="range" id="slider-b" min="-3" max="3" step="0.1" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <div class="matrix-cell">
+                                            <input type="number" id="mat-c" value="0" step="0.1">
+                                            <input type="range" id="slider-c" min="-3" max="3" step="0.1" value="0">
+                                        </div>
+                                        <div class="matrix-cell">
+                                            <input type="number" id="mat-d" value="3" step="0.1">
+                                            <input type="range" id="slider-d" min="-3" max="3" step="0.1" value="3">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="options-group">
+                            <label><input type="checkbox" id="checkEigen"> 固有空間(斜交座標)を表示</label>
+                            <p class="note">※固有空間表示中は、通常の格子は非表示になります。</p>
+                            <div id="eigen-info" class="info-box" style="display:none;">
+                                固有値・固有ベクトル計算中...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="simulation-layout">
+                        <div class="canvas-panel">
+                            <h3>定義域 (変換前)</h3>
+                            <div id="canvas-left-holder" class="canvas-holder"></div>
+                            <p class="caption">
+                                <span style="color:#43A047; font-weight:bold;">● $\vec{x}$ (入力)</span> をドラッグできます。<br>
+                                マウスカーソルを合わせてホイールで拡大・縮小。
+                            </p>
+                        </div>
+
+                        <div class="canvas-panel">
+                            <h3>値域 (変換後)</h3>
+                            <div id="canvas-right-holder" class="canvas-holder"></div>
+                            <p class="caption">
+                                <span style="color:#1565C0; font-weight:bold;">● $A\vec{e}_1$</span>, <span style="color:#C62828; font-weight:bold;">● $A\vec{e}_2$</span> をドラッグして行列を変更可能。<br>
+                                マウスカーソルを合わせてホイールで拡大・縮小。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div id="vector-info-bar" class="vector-info-bar">
+                        計算中...
+                    </div>
+
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="linear_trans.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
