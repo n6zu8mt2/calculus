@@ -15,7 +15,10 @@ const state = {
     
     // UI状態
     showEigen: false,
-    zoom: 1.0, // ズーム倍率
+    
+    // 左右独立ズーム (初期値 1.0)
+    zoomLeft: 1.0,
+    zoomRight: 1.0,
     
     // 計算結果キャッシュ
     eigenValues: [],
@@ -188,75 +191,75 @@ function calcEigen() {
 // --- 共通描画関数 ---
 
 // 数学座標(x, y)をスクリーン座標(sx, sy)に変換するヘルパー
-function toScreen(x, y) {
-    let scale = GRID_SIZE * state.zoom;
+function toScreen(x, y, zoom) {
+    let scale = GRID_SIZE * zoom;
     return { x: x * scale, y: -y * scale }; // y軸反転
 }
 
 // スクリーン座標から数学座標へ
-function toMath(sx, sy) {
-    let scale = GRID_SIZE * state.zoom;
+function toMath(sx, sy, zoom) {
+    let scale = GRID_SIZE * zoom;
     return { x: sx / scale, y: -sy / scale };
 }
 
 // 数学座標系での行列適用 -> スクリーン座標を返す
-function applyMatToScreen(matrix, x, y) {
+function applyMatToScreen(matrix, x, y, zoom) {
     let nx = matrix.a * x + matrix.b * y;
     let ny = matrix.c * x + matrix.d * y;
-    return toScreen(nx, ny);
+    return toScreen(nx, ny, zoom);
 }
 
 // グリッド線（薄い線）の描画
-function drawGridLines(p, matrix = null) {
+function drawGridLines(p, matrix, zoom) {
     if (state.showEigen) return;
 
     p.strokeWeight(1);
     p.stroke(220); 
     
-    let range = Math.ceil(AXIS_RANGE / state.zoom); 
+    let range = Math.ceil(AXIS_RANGE / zoom); 
 
     if (matrix) {
         // 行列によって歪んだグリッド
         for (let i = -range; i <= range; i++) {
-            let p1 = applyMatToScreen(matrix, i, -range);
-            let p2 = applyMatToScreen(matrix, i, range);
+            let p1 = applyMatToScreen(matrix, i, -range, zoom);
+            let p2 = applyMatToScreen(matrix, i, range, zoom);
             p.line(p1.x, p1.y, p2.x, p2.y);
         }
         for (let i = -range; i <= range; i++) {
-            let p1 = applyMatToScreen(matrix, -range, i);
-            let p2 = applyMatToScreen(matrix, range, i);
+            let p1 = applyMatToScreen(matrix, -range, i, zoom);
+            let p2 = applyMatToScreen(matrix, range, i, zoom);
             p.line(p1.x, p1.y, p2.x, p2.y);
         }
     } else {
         // 標準グリッド
         for (let i = -range; i <= range; i++) {
-            let s = toScreen(i, 0).x;
+            let s = toScreen(i, 0, zoom).x;
             p.line(s, -p.height, s, p.height);
         }
         for (let i = -range; i <= range; i++) {
-            let s = toScreen(0, i).y;
+            let s = toScreen(0, i, zoom).y;
             p.line(-p.width, s, p.width, s);
         }
     }
 }
 
 // 標準軸・目盛り・数値の描画（常に固定）
-function drawStandardAxes(p) {
-    let range = Math.ceil(AXIS_RANGE / state.zoom);
+function drawStandardAxes(p, zoom) {
+    let range = Math.ceil(AXIS_RANGE / zoom);
     
     // 軸（太い黒線）
     p.stroke(0);
     p.strokeWeight(2);
     
     // X軸
-    let xStart = toScreen(-range, 0);
-    let xEnd = toScreen(range, 0);
+    let xStart = toScreen(-range, 0, zoom);
+    let xEnd = toScreen(range, 0, zoom);
     p.line(xStart.x, xStart.y, xEnd.x, xEnd.y);
     drawAxisArrow(p, xStart, xEnd);
 
     // Y軸
-    let yStart = toScreen(0, -range);
-    let yEnd = toScreen(0, range);
+    let yStart = toScreen(0, -range, zoom);
+    let yEnd = toScreen(0, range, zoom);
     p.line(yStart.x, yStart.y, yEnd.x, yEnd.y);
     drawAxisArrow(p, yStart, yEnd);
 
@@ -265,17 +268,17 @@ function drawStandardAxes(p) {
     p.fill(0);
     p.textSize(10);
     
-    // ステップ調整（ズームしすぎたときに数字が重ならないように）
+    // ステップ調整
     let step = 1;
-    if (state.zoom < 0.5) step = 2;
-    if (state.zoom < 0.25) step = 5;
-    if (state.zoom < 0.1) step = 10;
+    if (zoom < 0.5) step = 2;
+    if (zoom < 0.25) step = 5;
+    if (zoom < 0.1) step = 10;
 
     // X軸目盛り
     p.textAlign(p.CENTER, p.TOP);
     for (let i = -range; i <= range; i += step) {
         if (i === 0) continue;
-        let s = toScreen(i, 0);
+        let s = toScreen(i, 0, zoom);
         // 目盛り線
         p.stroke(0);
         p.line(s.x, s.y - 3, s.x, s.y + 3);
@@ -288,7 +291,7 @@ function drawStandardAxes(p) {
     p.textAlign(p.RIGHT, p.MIDDLE);
     for (let i = -range; i <= range; i += step) {
         if (i === 0) continue;
-        let s = toScreen(0, i);
+        let s = toScreen(0, i, zoom);
         // 目盛り線
         p.stroke(0);
         p.line(s.x - 3, s.y, s.x + 3, s.y);
@@ -311,7 +314,7 @@ function drawAxisArrow(p, start, end) {
 }
 
 // ベクトル描画
-function drawVector(p, x, y, col, label, isGhost = false, weight = 3) {
+function drawVector(p, x, y, col, label, isGhost, weight, zoom) {
     p.push();
     if (isGhost) {
         p.stroke(col);
@@ -323,7 +326,7 @@ function drawVector(p, x, y, col, label, isGhost = false, weight = 3) {
         p.drawingContext.setLineDash([]);
     }
     
-    let s = toScreen(x, y);
+    let s = toScreen(x, y, zoom);
     p.line(0, 0, s.x, s.y);
     
     p.push();
@@ -346,7 +349,7 @@ function drawVector(p, x, y, col, label, isGhost = false, weight = 3) {
 }
 
 // 固有空間グリッド描画
-function drawEigenGrid(p, matrix = null) {
+function drawEigenGrid(p, matrix, zoom) {
     if (!state.showEigen || state.eigenVectors.length < 2) return;
     
     p.stroke(255, 152, 0, 100); 
@@ -367,8 +370,8 @@ function drawEigenGrid(p, matrix = null) {
         let endX = range * v1.x + i * v2.x;
         let endY = range * v1.y + i * v2.y;
         
-        let p1 = toScreen(startX, startY);
-        let p2 = toScreen(endX, endY);
+        let p1 = toScreen(startX, startY, zoom);
+        let p2 = toScreen(endX, endY, zoom);
         p.line(p1.x, p1.y, p2.x, p2.y);
 
         startX = i * v1.x - range * v2.x;
@@ -376,14 +379,14 @@ function drawEigenGrid(p, matrix = null) {
         endX = i * v1.x + range * v2.x;
         endY = i * v1.y + range * v2.y;
         
-        p1 = toScreen(startX, startY);
-        p2 = toScreen(endX, endY);
+        p1 = toScreen(startX, startY, zoom);
+        p2 = toScreen(endX, endY, zoom);
         p.line(p1.x, p1.y, p2.x, p2.y);
     }
 }
 
 // 固有ベクトルの描画
-function drawEigenVectors(p, matrix = null) {
+function drawEigenVectors(p, matrix, zoom) {
     if (!state.showEigen || state.eigenVectors.length < 2) return;
 
     let v1 = state.eigenVectors[0];
@@ -396,14 +399,14 @@ function drawEigenVectors(p, matrix = null) {
         label1 = "Ap1"; label2 = "Ap2";
     }
 
-    drawVector(p, v1.x, v1.y, '#E65100', label1, false, 3);
-    drawVector(p, v2.x, v2.y, '#E65100', label2, false, 3);
+    drawVector(p, v1.x, v1.y, '#E65100', label1, false, 3, zoom);
+    drawVector(p, v2.x, v2.y, '#E65100', label2, false, 3, zoom);
 }
 
 // キャラクター(顔)の描画
-function drawCharacter(p) {
+function drawCharacter(p, zoom) {
     p.push();
-    let scale = GRID_SIZE * state.zoom;
+    let scale = GRID_SIZE * zoom;
     
     // スケーリング
     p.scale(scale, -scale); 
@@ -419,7 +422,7 @@ function drawCharacter(p) {
     p.ellipse(0.35, 0.6, 0.1, 0.1);
     p.ellipse(0.65, 0.6, 0.1, 0.1);
     
-    // 口 (笑顔: PI ~ TWO_PI)
+    // 口 (笑顔)
     p.noFill();
     p.arc(0.5, 0.45, 0.5, 0.3, p.PI, p.TWO_PI);
     
@@ -440,24 +443,26 @@ const sketchLeft = (p) => {
         p.background(255);
         p.translate(p.width / 2, p.height / 2);
 
-        drawEigenGrid(p);
-        drawGridLines(p);
-        drawStandardAxes(p); // 常に標準軸を表示
+        let z = state.zoomLeft;
+
+        drawEigenGrid(p, null, z);
+        drawGridLines(p, null, z);
+        drawStandardAxes(p, z);
         
-        drawCharacter(p);
-        drawEigenVectors(p);
+        drawCharacter(p, z);
+        drawEigenVectors(p, null, z);
 
         // 基底ベクトル
         if (!state.showEigen) {
-            drawVector(p, 1, 0, '#1565C0', 'e1');
-            drawVector(p, 0, 1, '#C62828', 'e2');
+            drawVector(p, 1, 0, '#1565C0', 'e1', false, 3, z);
+            drawVector(p, 0, 1, '#C62828', 'e2', false, 3, z);
         }
 
-        // 入力ベクトル x (薄い緑っぽい色)
-        drawVector(p, state.vx, state.vy, '#43A047', 'x');
+        // 入力ベクトル x
+        drawVector(p, state.vx, state.vy, '#43A047', 'x', false, 3, z);
         
         // ハンドル
-        let s = toScreen(state.vx, state.vy);
+        let s = toScreen(state.vx, state.vy, z);
         p.fill(255); p.stroke('#43A047'); p.strokeWeight(2);
         if (p.dist(p.mouseX - p.width/2, p.mouseY - p.height/2, s.x, s.y) < 10) {
             p.fill('#43A047');
@@ -469,26 +474,26 @@ const sketchLeft = (p) => {
     };
 
     p.mouseDragged = () => {
+        let z = state.zoomLeft;
         let mx = p.mouseX - p.width/2;
         let my = p.mouseY - p.height/2;
-        let s = toScreen(state.vx, state.vy);
+        let s = toScreen(state.vx, state.vy, z);
         
         if (p.dist(mx, my, s.x, s.y) < 20 || isDragging) {
             isDragging = true;
-            let m = toMath(mx, my);
+            let m = toMath(mx, my, z);
             updateVector(m.x, m.y);
         }
     };
     
     p.mouseReleased = () => { isDragging = false; };
     
-    // マウスがキャンバス上にあるときだけズーム
     p.mouseWheel = (e) => {
         if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
-            state.zoom = Math.max(0.1, Math.min(5.0, state.zoom - e.delta * 0.001));
-            return false; // ページスクロール阻止
+            state.zoomLeft = Math.max(0.1, Math.min(5.0, state.zoomLeft - e.delta * 0.001));
+            return false;
         }
-        return true; // ページスクロール許可
+        return true;
     };
 
     p.windowResized = () => {
@@ -511,49 +516,51 @@ const sketchRight = (p) => {
         p.background(255);
         p.translate(p.width / 2, p.height / 2);
 
+        let z = state.zoomRight;
         let mat = {a:state.a, b:state.b, c:state.c, d:state.d};
 
-        drawEigenGrid(p, mat);
-        drawGridLines(p, mat);
-        drawStandardAxes(p); // 常に標準軸を表示
+        drawEigenGrid(p, mat, z);
+        drawGridLines(p, mat, z);
+        drawStandardAxes(p, z); // 変換後も標準軸はそのまま表示
 
         // 変形したキャラクター
         p.push();
+        // applyMatrix(a, c, b, d, 0, 0)
         p.applyMatrix(state.a, state.c, state.b, state.d, 0, 0);
-        drawCharacter(p);
+        drawCharacter(p, z);
         p.pop();
 
-        drawEigenVectors(p, mat);
+        drawEigenVectors(p, mat, z);
 
         // 変換前の基底ベクトル (Ghost)
         if (!state.showEigen) {
-            drawVector(p, 1, 0, 'rgba(21, 101, 192, 0.2)', '', true);
-            drawVector(p, 0, 1, 'rgba(198, 40, 40, 0.2)', '', true);
+            drawVector(p, 1, 0, 'rgba(21, 101, 192, 0.2)', '', true, 3, z);
+            drawVector(p, 0, 1, 'rgba(198, 40, 40, 0.2)', '', true, 3, z);
         }
 
         // 入力ベクトル x (Ghost)
-        drawVector(p, state.vx, state.vy, 'rgba(46, 125, 50, 0.3)', '', true);
+        drawVector(p, state.vx, state.vy, 'rgba(46, 125, 50, 0.3)', '', true, 3, z);
 
         // 変換後の基底ベクトル Ae1, Ae2
         if (!state.showEigen) {
-            drawVector(p, state.a, state.c, '#1565C0', 'Ae1');
-            drawVector(p, state.b, state.d, '#C62828', 'Ae2');
+            drawVector(p, state.a, state.c, '#1565C0', 'Ae1', false, 3, z);
+            drawVector(p, state.b, state.d, '#C62828', 'Ae2', false, 3, z);
         }
 
         // 出力ベクトル Ax
         let ax = state.a * state.vx + state.b * state.vy;
         let ay = state.c * state.vx + state.d * state.vy;
-        drawVector(p, ax, ay, '#2E7D32', 'Ax');
+        drawVector(p, ax, ay, '#2E7D32', 'Ax', false, 3, z);
 
         // ハンドル (Ae1, Ae2)
         if (!state.showEigen) {
-            drawHandle(p, state.a, state.c, '#1565C0');
-            drawHandle(p, state.b, state.d, '#C62828');
+            drawHandle(p, state.a, state.c, '#1565C0', z);
+            drawHandle(p, state.b, state.d, '#C62828', z);
         }
     };
 
-    function drawHandle(p, x, y, col) {
-        let s = toScreen(x, y);
+    function drawHandle(p, x, y, col, zoom) {
+        let s = toScreen(x, y, zoom);
         p.fill(255); p.stroke(col); p.strokeWeight(2);
         if (p.dist(p.mouseX - p.width/2, p.mouseY - p.height/2, s.x, s.y) < 10) {
             p.fill(col);
@@ -565,14 +572,15 @@ const sketchRight = (p) => {
     p.mouseDragged = () => {
         if (state.showEigen) return;
 
+        let z = state.zoomRight;
         let mx = p.mouseX - p.width/2;
         let my = p.mouseY - p.height/2;
         
-        let m = toMath(mx, my);
+        let m = toMath(mx, my, z);
 
         if (!dragTarget) {
-            let s1 = toScreen(state.a, state.c);
-            let s2 = toScreen(state.b, state.d);
+            let s1 = toScreen(state.a, state.c, z);
+            let s2 = toScreen(state.b, state.d, z);
             
             let d1 = p.dist(mx, my, s1.x, s1.y);
             let d2 = p.dist(mx, my, s2.x, s2.y);
@@ -590,10 +598,9 @@ const sketchRight = (p) => {
 
     p.mouseReleased = () => { dragTarget = null; p.cursor('default'); };
     
-    // マウスがキャンバス上にあるときだけズーム
     p.mouseWheel = (e) => {
         if (p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height) {
-            state.zoom = Math.max(0.1, Math.min(5.0, state.zoom - e.delta * 0.001));
+            state.zoomRight = Math.max(0.1, Math.min(5.0, state.zoomRight - e.delta * 0.001));
             return false;
         }
         return true;

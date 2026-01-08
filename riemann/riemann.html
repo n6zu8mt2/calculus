@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区分求積法シミュレーター | 積分の基礎</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="riemann.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>区分求積法シミュレーター</h1>
+                <p>〜長方形の和で面積を近似する〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>区分求積法とは 📚</h2>
+                    <p>
+                        いびつな形をした図形の面積を求めるために、その図形を細長い短冊（長方形）に分割し、それらの面積の和として近似値を求める方法を<b>区分求積法</b>といいます。
+                    </p>
+                    <div class="equation-box">
+                        <h3>定積分のイメージ</h3>
+                        <p>
+                            区間 $[a, b]$ を $n$ 個の長方形に分割して面積を足し合わせます。
+                            分割の幅を $\Delta x$、各分点の高さを $f(x_k)$ とすると、長方形の面積の合計は次のようになります。
+                        </p>
+                        $$ \text{長方形の面積の和} = f(x_0)\Delta x + f(x_1)\Delta x + \dots + f(x_{n-1})\Delta x $$
+                        <p>
+                            分割を細かくして長方形の数を限りなく増やしていく（$n \to \infty$）と、この和は<b>定積分</b>（実際の面積）に近づきます。
+                        </p>
+                        $$ \int_a^b f(x) dx = \lim_{n \to \infty} (\text{長方形の面積の和}) $$
+                    </div>
+                </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    <div class="controls-container">
+                        <div class="control-group">
+                            <label for="func-select">関数 $f(x)$:</label>
+                            <select id="func-select">
+                                <option value="poly_k">y = x² - kx</option>
+                                <option value="semicircle">y = √(r² - x²) (半円)</option>
+                                <option value="sin">y = sin(x)</option>
+                                <option value="exp">y = e^x</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group dynamic-param" id="group-k">
+                            <label>パラメータ $k$:</label>
+                            <div class="input-row">
+                                <input type="range" id="slider-k" min="-3" max="5" step="0.1" value="2">
+                                <input type="number" id="input-k" value="2.0" step="0.1" class="num-input">
+                            </div>
+                        </div>
+
+                        <div class="control-group dynamic-param" id="group-r" style="display:none;">
+                            <label>半径 $r$:</label>
+                            <div class="input-row">
+                                <input type="range" id="slider-r" min="0.5" max="4" step="0.1" value="1">
+                                <input type="number" id="input-r" value="1.0" step="0.1" min="0.1" class="num-input">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>区間 $[a, b]$:</label>
+                            <div class="input-row">
+                                <span>a:</span>
+                                <input type="range" id="slider-a" min="-5" max="5" step="0.1" value="0">
+                                <input type="number" id="input-a" value="0" step="0.1" class="num-input">
+                            </div>
+                            <div class="input-row">
+                                <span>b:</span>
+                                <input type="range" id="slider-b" min="-5" max="5" step="0.1" value="2">
+                                <input type="number" id="input-b" value="2" step="0.1" class="num-input">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>分割数 $n$:</label>
+                            <div class="input-row">
+                                <input type="range" id="slider-n" min="1" max="100" step="1" value="5">
+                                <input type="number" id="input-n" value="5" step="1" min="1" max="500" class="num-input">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label>近似方法:</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="method" value="left" checked> 左端 (Left)</label>
+                                <label><input type="radio" name="method" value="right"> 右端 (Right)</label>
+                                <label><input type="radio" name="method" value="mid"> 中点 (Midpoint)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="math-display-area">
+                        <div class="math-box">
+                            <h4>実際の面積 (定積分)</h4>
+                            <div id="integral-math" class="math-content">
+                                </div>
+                        </div>
+                        <div class="math-box">
+                            <h4>近似面積 (長方形の和)</h4>
+                            <div id="delta-x-info">
+                                </div>
+                            <div id="sum-math" class="math-content scrollable-math">
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container">
+                        <div id="canvas-holder"></div>
+                        <div class="result-display">
+                            <div class="result-item">
+                                <span class="label">近似面積 (Sum):</span>
+                                <span class="value" id="res-approx">0.0000</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">実際の面積 (Integral):</span>
+                                <span class="value" id="res-exact">0.0000</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">誤差 (Error):</span>
+                                <span class="value" id="res-error">0.0000</span>
+                            </div>
+                            
+                            <div id="pi-explanation" class="result-item" style="display:none; background:#e1f5fe; padding:10px; margin-top:10px; border-radius:5px;">
+                                <span class="label" style="color:#0277bd;">円周率との関係 ($r=1$のとき)</span>
+                                <div style="font-size:0.9em; margin-top:5px;">
+                                    半円の面積 $S = \frac{1}{2}\pi r^2$ なので、<br>
+                                    $2 \times \text{Sum} \approx \pi r^2$<br>
+                                    <strong>計算値: <span id="val-pi-calc">--</span></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="riemann.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
