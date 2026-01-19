@@ -30,22 +30,38 @@ main h2 {
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
-    gap: 40px;
+    gap: 30px;
     align-items: flex-start;
     justify-content: center;
 }
 
-.matrix-control-group {
+.control-block {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 250px;
 }
 
+.block-label {
+    font-weight: bold;
+    color: #1565C0;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-bottom: 2px solid #e3f2fd;
+    padding-bottom: 5px;
+}
+
+/* 行列入力部分 */
 .matrix-display {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.2em;
     font-weight: bold;
 }
 
@@ -57,19 +73,18 @@ main h2 {
     border-left: 3px solid #333;
     border-right: 3px solid #333;
     border-radius: 12px;
-    background: white;
 }
 
 .matrix-row {
     display: flex;
-    gap: 20px;
+    gap: 15px;
 }
 
 .matrix-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80px;
+    width: 70px;
 }
 
 .matrix-cell input[type="number"] {
@@ -88,17 +103,71 @@ main h2 {
     cursor: pointer;
 }
 
-.options-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 300px;
+.det-display {
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 1.1em;
+    color: #333;
+    background: #f9f9f9;
+    padding: 5px 10px;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+}
+.det-note {
+    font-size: 0.8em;
+    color: #666;
+    margin-left: 5px;
 }
 
+/* プリセットボタン */
+.presets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.preset-btn {
+    padding: 6px 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.preset-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.angle-control {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    background: #fafafa;
+    padding: 5px;
+    border-radius: 4px;
+}
+.angle-control input {
+    padding: 4px;
+    text-align: right;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.options-group {
+    width: 100%;
+    text-align: left;
+}
 .note {
     font-size: 0.85em;
     color: #666;
-    margin: 0;
+    margin: 5px 0 0 0;
 }
 
 .info-box {
@@ -107,9 +176,10 @@ main h2 {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    margin-top: 5px;
 }
 
-/* シミュレーションエリア (左右分割) */
+/* シミュレーションエリア */
 .simulation-layout {
     display: flex;
     flex-wrap: wrap;
@@ -132,6 +202,7 @@ main h2 {
     color: #333;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .canvas-holder {
@@ -140,6 +211,10 @@ main h2 {
     border: 1px solid #eee;
     background-color: #fafafa;
     position: relative;
+    cursor: grab;
+}
+.canvas-holder:active {
+    cursor: grabbing;
 }
 
 .caption {
@@ -159,11 +234,6 @@ main h2 {
     text-align: center;
     font-size: 1.2em;
     border-radius: 8px;
-}
-.vector-info-bar span {
-    font-family: monospace;
-    font-weight: bold;
-    color: #2E7D32;
 }
 
 /* 戻るリンク */

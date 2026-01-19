@@ -38,11 +38,32 @@
                 <section id="explanation">
                     <h2>線形変換とは 📐</h2>
                     <p>
-                        2次元ベクトル $\vec{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ を、行列 $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ を用いて別のベクトル $\vec{x}' = \begin{pmatrix} x' \\ y' \end{pmatrix}$ に移す変換を<b>線形変換</b>といいます。
+                        2次元ベクトル $\boldsymbol{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ は、基本ベクトル $\boldsymbol{e}_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$ と $\boldsymbol{e}_2 = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ を用いて次のように分解できます。
                     </p>
-                    $$ \begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = x \begin{pmatrix} a \\ c \end{pmatrix} + y \begin{pmatrix} b \\ d \end{pmatrix} $$
+                    $$ \boldsymbol{x} = \begin{pmatrix} x \\ y \end{pmatrix} = x \begin{pmatrix} 1 \\ 0 \end{pmatrix} + y \begin{pmatrix} 0 \\ 1 \end{pmatrix} = x \boldsymbol{e}_1 + y \boldsymbol{e}_2 $$
                     <p>
-                        この式は、基本ベクトル $\vec{e}_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$ が $\begin{pmatrix} a \\ c \end{pmatrix}$ に、$\vec{e}_2 = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ が $\begin{pmatrix} b \\ d \end{pmatrix}$ に移されることを意味しています。つまり、<b>「変換後の基底ベクトルの行き先」が行列の列を作っています</b>。
+                        これのことから、$\boldsymbol{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ を次のように解釈できます。
+                    </p>
+                    <ul>
+                        <li>$\boldsymbol{e}_1$ 方向（$x$軸方向）に $x$ だけ進み、</li>
+                        <li>$\boldsymbol{e}_2$ 方向（$y$軸方向）に $y$ だけ進む</li>
+                    </ul>
+                    <p>
+                        ことで得られる位置ベクトルが $\boldsymbol{x}$ です。
+                    </p>
+                    <p>
+                        この$\boldsymbol{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ に、行列 $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ による線形変換を施すと、変換後のベクトル $\boldsymbol{x}^\prime$ は次のようになります。
+                    </p>
+                    $$ \boldsymbol{x}^\prime = A \boldsymbol{x} = A (x \boldsymbol{e}_1 + y \boldsymbol{e}_2) = x (A \boldsymbol{e}_1) + y (A \boldsymbol{e}_2) $$
+                    <p>
+                        これは、変換後の世界でも同様に考えることができることを示しています。つまり、変換後のベクトル $\boldsymbol{x}^\prime$ は、
+                    </p>
+                    <ul>
+                        <li>$\boldsymbol{e}_1$の変換後のベクトルである $A\boldsymbol{e}_1 = \begin{pmatrix} a \\ c \end{pmatrix}$ 方向に $x$ だけ進み、</li>
+                        <li>$\boldsymbol{e}_2$の変換後のベクトルである $A\boldsymbol{e}_2 = \begin{pmatrix} b \\ d \end{pmatrix}$ 方向に $y$ だけ進む</li>
+                    </ul>
+                    <p>
+                        ことで得られるベクトルとなります。つまり、変換後の世界では、基底ベクトル $\boldsymbol{e}_1$ と $\boldsymbol{e}_2$ が、 $A\boldsymbol{e}_1$ と $A\boldsymbol{e}_2$ に変化し、空間全体（格子）がそれに合わせて歪みます。
                     </p>
                 </section>
                 
@@ -50,9 +71,9 @@
                     <h2>シミュレーション</h2>
                     
                     <div class="controls-container">
-                        <div class="matrix-control-group">
+                        <div class="control-block">
+                            <label class="block-label">行列 $A$</label>
                             <div class="matrix-display">
-                                <label>行列 $A = $</label>
                                 <div class="matrix-brackets">
                                     <div class="matrix-row">
                                         <div class="matrix-cell">
@@ -76,13 +97,32 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="det-display">
+                                行列式 $\det A = $ <span id="val-det">--</span>
+                                <span class="det-note">(面積拡大率)</span>
+                            </div>
                         </div>
-                        
-                        <div class="options-group">
+
+                        <div class="control-block">
+                            <label class="block-label">プリセット / 設定</label>
+                            
+                            <div class="angle-control">
+                                <label for="angle-input">回転角度 (反時計回り):</label>
+                                <input type="number" id="angle-input" value="45" step="5" style="width: 60px;">
+                                <span>°</span>
+                            </div>
+
+                            <div class="presets-grid">
+                                <button class="preset-btn" data-type="identity">単位行列 (初期化)</button>
+                                <button class="preset-btn" data-type="rotate">回転 (指定角度)</button>
+                                <button class="preset-btn" data-type="scale2">拡大 (2倍)</button>
+                                <button class="preset-btn" data-type="shearX">せん断 (X軸)</button>
+                                <button class="preset-btn" data-type="reflectX">鏡映 (X軸)</button>
+                                <button class="preset-btn" data-type="projectionX">射影 (X軸)</button>
+                            </div>
+                            <div class="options-group">
                             <label><input type="checkbox" id="checkEigen"> 固有空間(斜交座標)を表示</label>
-                            <p class="note">※固有空間表示中は、通常の格子は非表示になります。</p>
-                            <div id="eigen-info" class="info-box" style="display:none;">
-                                固有値・固有ベクトル計算中...
+                            <div id="eigen-info" class="info-box" style="display: none;"></div>
                             </div>
                         </div>
                     </div>
@@ -92,8 +132,8 @@
                             <h3>定義域 (変換前)</h3>
                             <div id="canvas-left-holder" class="canvas-holder"></div>
                             <p class="caption">
-                                <span style="color:#43A047; font-weight:bold;">● $\vec{x}$ (入力)</span> をドラッグできます。<br>
-                                マウスカーソルを合わせてホイールで拡大・縮小。
+                                <span style="color:#43A047; font-weight:bold;">● $\boldsymbol{x}$</span> をドラッグしてベクトル変更。<br>
+                                空白部ドラッグで視点移動、ホイールで拡大縮小。
                             </p>
                         </div>
 
@@ -101,8 +141,8 @@
                             <h3>値域 (変換後)</h3>
                             <div id="canvas-right-holder" class="canvas-holder"></div>
                             <p class="caption">
-                                <span style="color:#1565C0; font-weight:bold;">● $A\vec{e}_1$</span>, <span style="color:#C62828; font-weight:bold;">● $A\vec{e}_2$</span> をドラッグして行列を変更可能。<br>
-                                マウスカーソルを合わせてホイールで拡大・縮小。
+                                <span style="color:#1565C0; font-weight:bold;">● $A\boldsymbol{e}_1$</span>, <span style="color:#C62828; font-weight:bold;">● $A\boldsymbol{e}_2$</span> をドラッグして行列変更。<br>
+                                空白部ドラッグで視点移動、ホイールで拡大縮小。
                             </p>
                         </div>
                     </div>
