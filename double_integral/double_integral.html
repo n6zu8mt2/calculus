@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重積分シミュレーター | 体積の近似と累次積分</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="double_integral.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>重積分シミュレーター</h1>
+                <p>〜区分求積法と累次積分の幾何学的意味〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>重積分とは 📚</h2>
+                    
+                    <div class="equation-box">
+                        <h3>1. 重積分の定義（区分求積法による体積）</h3>
+                        <p>
+                            1変数の定積分が面積を表したように、2変数の重積分 $\iint_D f(x,y) dx dy$ は、曲面 $z=f(x,y)$ の下の<b>体積</b>を表します。
+                        </p>
+                        <p>
+                            領域 $D$ を細かい長方形に分割し、それぞれの場所に柱（直方体）を立てて、その体積の合計で近似します。
+                        </p>
+                        $$ V \approx \sum_{i} \sum_{j} \underbrace{f(x_i, y_j)}_{\text{高さ}} \underbrace{\Delta x \Delta y}_{\text{底面積}} $$
+                    </div>
+
+                    <div class="equation-box" style="margin-top: 20px;">
+                        <h3>2. 累次積分（計算の手法）</h3>
+                        <p>
+                            重積分を計算する際は、1変数の積分を繰り返す「累次積分」を用います。これは立体をスライスして、その断面積を積み重ねるイメージです。
+                        </p>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>(A) $x$ で先に積分する場合 ($\int dy \int dx$):</strong><br>
+                            $y$ を固定して $x$ 軸に平行に切断します（金太郎飴を切るイメージ）。その切り口の面積 $S(y) = \int f(x, y) dx$ を求め、それを $y$ について積分します。
+                            $$ V = \int_c^d S(y) dy = \int_c^d \left( \int_a^b f(x, y) dx \right) dy $$
+                        </div>
+
+                        <div>
+                            <strong>(B) $y$ で先に積分する場合 ($\int dx \int dy$):</strong><br>
+                            $x$ を固定して $y$ 軸に平行に切断します。その切り口の面積 $S(x) = \int f(x, y) dy$ を求め、それを $x$ について積分します。
+                            $$ V = \int_a^b S(x) dx = \int_a^b \left( \int_c^d f(x, y) dy \right) dx $$
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    
+                    <div class="controls-container">
+                        <div class="control-group">
+                            <label>可視化モード:</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="viewMode" value="riemann" checked> 区分求積法 (格子状の柱)</label>
+                                <label><input type="radio" name="viewMode" value="sliceX"> x先積分 (y固定スライス)</label>
+                                <label><input type="radio" name="viewMode" value="sliceY"> y先積分 (x固定スライス)</label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="func-select">関数 $z = f(x, y)$:</label>
+                            <select id="func-select">
+                                <option value="parabola">放物面: x² + y²</option>
+                                <option value="sin_cos">波形: sin(x) + cos(y) + 2</option>
+                                <option value="plane">平面: 0.5x + 0.5y + 1</option>
+                                <option value="dome">ドーム: √(16 - x² - y²)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group" id="slice-control-group" style="display:none;">
+                            <label>スライス表示タイプ:</label>
+                            <div class="radio-group horizontal">
+                                <label><input type="radio" name="sliceType" value="single" checked> 切断面のみ (移動可)</label>
+                                <label><input type="radio" name="sliceType" value="sum"> 体積の総和 (板の集合)</label>
+                            </div>
+                            
+                            <div id="slice-pos-container" style="margin-top: 10px;">
+                                <label id="slice-label">切断面の位置:</label>
+                                <div class="slider-row">
+                                    <input type="range" id="slider-slice" min="0" max="100" step="1" value="50">
+                                    <span id="val-slice">0.0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group" id="riemann-control-group">
+                            <label>分割数 (精度):</label>
+                            <div class="slider-row">
+                                <span>nx:</span>
+                                <input type="range" id="slider-nx" min="2" max="30" step="1" value="10">
+                                <span id="val-nx">10</span>
+                            </div>
+                            <div class="slider-row">
+                                <span>ny:</span>
+                                <input type="range" id="slider-ny" min="2" max="30" step="1" value="10">
+                                <span id="val-ny">10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="math-display-area">
+                        <div class="math-box">
+                            <h4 id="math-title">現在の計算</h4>
+                            <div id="dynamic-math" class="math-content">
+                                $$ \dots $$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container">
+                        <div id="canvas-holder"></div>
+                        <div class="result-display">
+                            <div class="result-item">
+                                <span class="label">実際の体積 (Integral):</span>
+                                <span class="value" id="res-exact">0.0000</span>
+                            </div>
+                            <div class="result-item" id="approx-res-box">
+                                <span class="label">近似体積 (Sum):</span>
+                                <span class="value" id="res-approx">0.0000</span>
+                            </div>
+                            <div class="instruction-note">
+                                ・図をドラッグ: 回転<br>
+                                ・ホイール: 拡大縮小 (図の上でのみ有効)
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="double_integral.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>

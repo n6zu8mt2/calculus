@@ -1,0 +1,191 @@
+/* common.css の h2 スタイルを main h2 にも適用 */
+main h2 {
+    font-size: 1.8em;
+    color: #0d47a1;
+    border-left: 5px solid #4a90e2;
+    padding-left: 10px;
+    margin-top: 40px;
+}
+
+/* 解説セクション */
+#explanation {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+#explanation .mjx-chtml {
+    text-align: center;
+    margin: 1em 0;
+}
+
+/* コントロールパネル */
+.controls-container {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.control-block {
+    flex: 1;
+    min-width: 280px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.block-label {
+    font-weight: bold;
+    color: #1565C0;
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+    border-bottom: 2px solid #e3f2fd;
+    padding-bottom: 5px;
+}
+
+.param-row {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.param-row label {
+    font-weight: bold;
+    color: #555;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.slider-container input[type="range"] {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+/* ベクトル入力用スタイル (スライダー付き) */
+.vector-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+.vec-label {
+    font-family: serif;
+    font-style: italic;
+    font-size: 1.2em;
+}
+.matrix-brackets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+    border-left: 2px solid #333;
+    border-right: 2px solid #333;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.vec-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vec-cell input[type="number"] {
+    width: 60px;
+    padding: 4px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 1em;
+}
+
+.vec-cell input[type="range"] {
+    width: 100px;
+    cursor: pointer;
+}
+
+.num-input {
+    /* 共通クラスとして定義 */
+    text-align: right;
+}
+
+/* 行列表示 */
+#matrix-value {
+    text-align: center;
+    padding: 10px;
+    font-size: 1.1em;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* キャンバスエリア */
+.canvas-container {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+#canvas-holder {
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    background-color: #fafafa;
+}
+#canvas-holder:active {
+    cursor: grabbing;
+}
+
+.caption {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+/* 数式情報バー */
+.info-bar {
+    margin-top: 20px;
+    background-color: #f1f8e9;
+    border: 1px solid #c5e1a5;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.2em;
+    border-radius: 8px;
+}
+
+/* 戻るリンク */
+.back-link {
+    margin: 15px 0;
+}
+.back-link a {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+.back-link a:hover {
+    text-decoration: underline;
+}
+.back-link.bottom {
+    margin-top: 40px;
+}

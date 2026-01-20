@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回転行列シミュレーター | 線形代数</title>
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="rotation.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div id="sidebar-placeholder" data-root-path="../"></div>
+        <div class="main-content">
+            <div class="header">
+                <h1>回転行列シミュレーター</h1>
+                <p>〜ベクトルを原点中心に回転させる〜</p>
+            </div>
+
+            <div class="back-link">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+            <main>
+                <section id="explanation">
+                    <h2>回転行列とは 📐</h2>
+                    <p>
+                        2次元ベクトル $\boldsymbol{x} = \begin{pmatrix} x \\ y \end{pmatrix}$ を、原点を中心に反時計回りに角度 $\theta$ だけ回転させる変換は、以下の<b>回転行列</b> $R(\theta)$ を用いて表されます。
+                    </p>
+                    $$ R(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} $$
+                    <p>
+                        回転後のベクトル $\boldsymbol{x}^\prime = \begin{pmatrix} x' \\ y' \end{pmatrix}$ は、行列とベクトルの積として計算できます。
+                    </p>
+                    $$ \begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} $$
+                </section>
+                
+                <section id="simulation">
+                    <h2>シミュレーション</h2>
+                    
+                    <div class="controls-container">
+                        <div class="control-block">
+                            <label class="block-label">回転設定</label>
+                            
+                            <div class="param-row">
+                                <label>角度 $\theta$ (度):</label>
+                                <div class="slider-container">
+                                    <input type="range" id="angle-slider" min="-360" max="360" step="1" value="30">
+                                    <input type="number" id="angle-input" value="30" step="1" class="num-input">
+                                    <span>°</span>
+                                </div>
+                            </div>
+
+                            <div class="param-row">
+                                <label>入力ベクトル $\boldsymbol{x}$:</label>
+                                <div class="vector-input-group">
+                                    <div class="vec-label">$\boldsymbol{x} =$</div>
+                                    <div class="matrix-brackets">
+                                        <div class="vec-cell">
+                                            <input type="number" id="vec-x" value="1" step="0.1" class="num-input">
+                                            <input type="range" id="slider-x" min="-5" max="5" step="0.1" value="1">
+                                        </div>
+                                        <div class="vec-cell">
+                                            <input type="number" id="vec-y" value="2" step="0.1" class="num-input">
+                                            <input type="range" id="slider-y" min="-5" max="5" step="0.1" value="2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-block">
+                            <label class="block-label">行列の値 $R(\theta)$</label>
+                            <div id="matrix-value">
+                                $$ \begin{pmatrix} \cos 30^\circ & -\sin 30^\circ \\ \sin 30^\circ & \cos 30^\circ \end{pmatrix} $$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container">
+                        <div id="canvas-holder"></div>
+                        <p class="caption">
+                            <span style="color:#43A047; font-weight:bold;">● $\boldsymbol{x}$ (入力)</span> をドラッグして変更できます。<br>
+                            <span style="color:#2E7D32; font-weight:bold;">● $\boldsymbol{x}^\prime$ (回転後)</span>、
+                            <span style="color:#1565C0;">● $R(\theta)\boldsymbol{e}_1$</span>、
+                            <span style="color:#C62828;">● $R(\theta)\boldsymbol{e}_2$</span><br>
+                            空白部ドラッグで視点移動、ホイールで拡大縮小。
+                        </p>
+                    </div>
+                    
+                    <div id="vector-info-bar" class="info-bar">
+                        計算中...
+                    </div>
+
+                </section>
+            </main>
+            
+            <div class="back-link bottom">
+                <a href="../index.html">← トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="rotation.js"></script>
+    <script src="../sidebar.js"></script>
+</body>
+</html>
