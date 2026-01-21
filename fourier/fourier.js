@@ -11,8 +11,6 @@ const sketchSound = (p) => {
     let freqSlider, ampSlider;
     let valFreq, valAmp;
     let btnPlay, btnStop;
-    
-    // 波形描画用
     let time = 0;
 
     p.setup = () => {
@@ -22,13 +20,11 @@ const sketchSound = (p) => {
         p.createCanvas(w, h);
         
         if (typeof p5.Oscillator === 'undefined') {
-            console.error('p5.sound library is not loaded.');
             return;
         }
         
         osc = new p5.Oscillator('sine');
         
-        // UI要素取得
         freqSlider = document.getElementById('slider-freq');
         valFreq = document.getElementById('val-freq');
         ampSlider = document.getElementById('slider-amp');
@@ -36,13 +32,11 @@ const sketchSound = (p) => {
         btnPlay = document.getElementById('btn-play');
         btnStop = document.getElementById('btn-stop');
 
-        // イベント設定
         if (btnPlay) {
             btnPlay.addEventListener('click', () => {
                 if (!playing) {
                     p.userStartAudio().then(() => {
                         osc.start();
-                        // 現在のスライダー値でフェードイン
                         let amp = parseFloat(ampSlider.value);
                         osc.amp(amp, 0.1); 
                         playing = true;
@@ -63,7 +57,6 @@ const sketchSound = (p) => {
             });
         }
 
-        // 周波数スライダー
         if (freqSlider) {
             freqSlider.addEventListener('input', () => {
                 if (valFreq) valFreq.textContent = freqSlider.value;
@@ -73,7 +66,6 @@ const sketchSound = (p) => {
             });
         }
 
-        // 振幅スライダー
         if (ampSlider) {
             ampSlider.addEventListener('input', () => {
                 let v = parseFloat(ampSlider.value);
@@ -93,7 +85,6 @@ const sketchSound = (p) => {
         let f = parseFloat(freqSlider.value);
         let a = parseFloat(ampSlider.value);
 
-        // 波形の描画
         p.stroke(0);
         p.strokeWeight(2);
         p.noFill();
@@ -102,21 +93,15 @@ const sketchSound = (p) => {
         let speed = f * 0.0005; 
         time += speed;
 
-        // 最大振幅を画面の高さの40%程度とする (a=1のとき)
         let maxH = p.height * 0.4;
 
         for (let x = 0; x < p.width; x++) {
-            // angle: 画面幅の中で波がいくつか見えるように調整
             let angle = p.map(x, 0, p.width, 0, p.TWO_PI * (f / 50)); 
-            
-            // y = center - A * sin(...) 
-            // 振幅スライダー(a)を反映させる
             let y = p.height / 2 - (a * maxH) * Math.sin(angle - time * 10);
             p.vertex(x, y);
         }
         p.endShape();
 
-        // 中心軸
         p.stroke(200);
         p.strokeWeight(1);
         p.line(0, p.height/2, p.width, p.height/2);
@@ -177,13 +162,12 @@ const sketchSeries = (p) => {
 
         drawAxes();
 
-        // 1. ターゲット関数
+        // ターゲット関数
         p.stroke(180);
         p.strokeWeight(4);
         p.noFill();
         p.strokeJoin(p.ROUND);
         p.beginShape();
-        // x範囲を少し広めに取る
         for (let x = -p.width/2; x < p.width/2; x += 2) {
             let t = x / SCALE_X;
             let y = getTargetValue(t);
@@ -191,7 +175,7 @@ const sketchSeries = (p) => {
         }
         p.endShape();
 
-        // 2. 近似関数
+        // 近似関数
         p.stroke('#E65100');
         p.strokeWeight(2);
         p.noFill();
@@ -222,31 +206,20 @@ const sketchSeries = (p) => {
         }
     }
 
-    // ターゲット関数の定義 (周期 2PI)
     function getTargetValue(x) {
-        // -PI ~ PI に正規化
         let phase = (x + Math.PI) % (2 * Math.PI) - Math.PI; 
         if(phase < -Math.PI) phase += 2*Math.PI;
 
         switch (currentFunc) {
-            case 'square':
-                return Math.sin(x) >= 0 ? 1 : -1;
-            case 'sawtooth':
-                return phase / 2; 
-            case 'parabola':
-                return (phase * phase) / 4; 
-            case 'abs_x':
-                // |x|
-                return Math.abs(phase);
-            case 'cubic':
-                // x^3 / 10 (スケール調整)
-                return (phase * phase * phase) / 10;
-            default:
-                return 0;
+            case 'square': return Math.sin(x) >= 0 ? 1 : -1;
+            case 'sawtooth': return phase / 2; 
+            case 'parabola': return (phase * phase) / 4; 
+            case 'abs_x': return Math.abs(phase);
+            case 'cubic': return (phase * phase * phase) / 10;
+            default: return 0;
         }
     }
 
-    // フーリエ級数の計算
     function getFourierSum(x, nMax) {
         let sum = 0;
         switch (currentFunc) {
@@ -262,12 +235,10 @@ const sketchSeries = (p) => {
                     let sign = (n % 2 === 1) ? 1 : -1;
                     sum += sign * Math.sin(n * x) / n;
                 }
-                return sum; // (1/2 scale already in target)
+                return sum; 
 
             case 'parabola':
-                // x^2 on [-pi, pi] => pi^2/3 + 4 sum (-1)^n cos(nx)/n^2
-                // Target is x^2/4, so divide series by 4
-                sum = (Math.PI * Math.PI) / 12; // Const
+                sum = (Math.PI * Math.PI) / 12; 
                 for (let n = 1; n <= nMax; n++) {
                     let sign = (n % 2 === 1) ? -1 : 1; 
                     sum += (sign * Math.cos(n * x) / (n * n));
@@ -275,64 +246,128 @@ const sketchSeries = (p) => {
                 return sum;
 
             case 'abs_x':
-                // |x| on [-pi, pi] => pi/2 - 4/pi sum_{odd} cos(nx)/n^2
                 sum = Math.PI / 2;
                 for (let n = 1; n <= nMax; n++) {
-                    let k = 2 * n - 1; // odd only
+                    let k = 2 * n - 1; 
                     sum -= (4 / Math.PI) * Math.cos(k * x) / (k * k);
                 }
                 return sum;
 
             case 'cubic':
-                // x^3 on [-pi, pi] => sum (-1)^n * (12/n^3 - 2pi^2/n) sin(nx)
-                // Target is x^3 / 10
-                // b_n for x^3 is (-1)^n * (2*pi^2*n^2 - 12)/n^3 ? 
-                // Let's use the formula: b_n = 2/pi * int_0^pi x^3 sin(nx) dx
-                // = (-1)^n * 2 * (pi^2/n - 6/n^3)
-                // So series is: sum_{n=1} (-1)^n * 2 * (pi^2/n - 6/n^3) * sin(nx)
-                // Divide by 10 for target match.
                 for (let n = 1; n <= nMax; n++) {
-                    let sign = (n % 2 === 1) ? 1 : -1; // sin(x): n=1 -> +
-                    // Note: formula typically has (-1)^(n) or (-1)^(n+1).
-                    // x^3 starts positive for x>0. sin(x) is positive.
-                    // For n=1: b1 = 2(pi^2 - 6) > 0. sin(x) coeff should be positive.
-                    // Formula check: (-1)^n * ... for n=1 is negative. 
-                    // Usually b_n = (-1)^(n+1) ...
-                    
-                    // Let's compute coefficient value directly:
-                    // bn = (-1)^(n) * 2 * (6/(n^3) - (pi^2)/n)
-                    // if n=1: -1 * 2 * (6 - 9.8) = -2 * -3.8 = +7.6. Correct.
-                    
                     let coeff = Math.pow(-1, n) * 2 * (6 / Math.pow(n, 3) - (Math.PI * Math.PI) / n);
                     sum += coeff * Math.sin(n * x);
                 }
                 return sum / 10;
 
-            default:
-                return 0;
+            default: return 0;
         }
     }
 
+    // 数式表示の更新 (項の羅列)
     function updateMathJax() {
         if (!mathDiv) return;
         
         let tex = "";
-        let nStr = N > 5 ? "5" : N; 
+        const showLimit = 3; // 具体的に表示する項数の上限
+
+        // 数式生成ヘルパー
+        // terms: { sign: " + " | " - ", latex: string }[]
+        const buildFormula = (prefix, terms, factorStr = "") => {
+            let s = prefix;
+            if (factorStr) s += factorStr + " \\left( ";
+            
+            terms.forEach((t, i) => {
+                if (i === 0) {
+                    if (t.sign.includes("-")) s += "-";
+                    s += t.latex;
+                } else {
+                    s += t.sign + t.latex;
+                }
+            });
+            
+            if (factorStr) s += " \\right)";
+            return s;
+        };
+
+        let terms = [];
 
         if (currentFunc === 'square') {
-            tex = "f(x) \\approx \\frac{4}{\\pi} \\sum_{n=1}^{N} \\frac{\\sin((2n-1)x)}{2n-1}";
+            for (let n = 1; n <= Math.min(N, showLimit); n++) {
+                let k = 2 * n - 1;
+                let val = k === 1 ? "\\sin x" : `\\frac{\\sin ${k}x}{${k}}`;
+                terms.push({ sign: " + ", latex: val });
+            }
+            if (N > showLimit) {
+                terms.push({ sign: " + ", latex: "\\cdots" });
+                let k = 2 * N - 1;
+                let val = `\\frac{\\sin ${k}x}{${k}}`;
+                terms.push({ sign: " + ", latex: val });
+            }
+            tex = "f(x) \\approx " + buildFormula("", terms, "\\frac{4}{\\pi}");
         } 
         else if (currentFunc === 'sawtooth') {
-            tex = "f(x) \\approx \\sum_{n=1}^{N} (-1)^{n+1} \\frac{\\sin(nx)}{n}";
+            for (let n = 1; n <= Math.min(N, showLimit); n++) {
+                let val = n === 1 ? "\\sin x" : `\\frac{\\sin ${n}x}{${n}}`;
+                let sign = (n % 2 === 1) ? " + " : " - ";
+                terms.push({ sign: sign, latex: val });
+            }
+            if (N > showLimit) {
+                terms.push({ sign: " + ", latex: "\\cdots" });
+                let val = `\\frac{\\sin ${N}x}{${N}}`;
+                let sign = (N % 2 === 1) ? " + " : " - ";
+                terms.push({ sign: sign, latex: val });
+            }
+            tex = "f(x) \\approx " + buildFormula("", terms, "2");
         }
         else if (currentFunc === 'parabola') {
-            tex = "f(x) \\approx \\frac{\\pi^2}{12} + \\sum_{n=1}^{N} (-1)^{n} \\frac{\\cos(nx)}{n^2}";
+            for (let n = 1; n <= Math.min(N, showLimit); n++) {
+                let val = n === 1 ? "\\cos x" : `\\frac{\\cos ${n}x}{${n*n}}`;
+                let sign = (n % 2 === 1) ? " - " : " + ";
+                terms.push({ sign: sign, latex: val });
+            }
+            if (N > showLimit) {
+                terms.push({ sign: " + ", latex: "\\cdots" });
+                let val = `\\frac{\\cos ${N}x}{${N*N}}`;
+                let sign = (N % 2 === 1) ? " - " : " + ";
+                terms.push({ sign: sign, latex: val });
+            }
+            tex = "f(x) \\approx " + buildFormula("\\frac{\\pi^2}{12} ", terms);
         }
         else if (currentFunc === 'abs_x') {
-            tex = "f(x) \\approx \\frac{\\pi}{2} - \\frac{4}{\\pi} \\sum_{n=1, odd}^{N} \\frac{\\cos(nx)}{n^2}";
+            for (let n = 1; n <= Math.min(N, showLimit); n++) {
+                let k = 2 * n - 1;
+                let val = k === 1 ? "\\cos x" : `\\frac{\\cos ${k}x}{${k*k}}`;
+                terms.push({ sign: " + ", latex: val });
+            }
+            if (N > showLimit) {
+                terms.push({ sign: " + ", latex: "\\cdots" });
+                let k = 2 * N - 1;
+                let val = `\\frac{\\cos ${k}x}{${k*k}}`;
+                terms.push({ sign: " + ", latex: val });
+            }
+            tex = "f(x) \\approx " + buildFormula("\\frac{\\pi}{2} ", terms, " - \\frac{4}{\\pi}");
         }
         else if (currentFunc === 'cubic') {
-            tex = "f(x) \\approx \\frac{1}{5} \\sum_{n=1}^{N} (-1)^{n} \\left( \\frac{6}{n^3} - \\frac{\\pi^2}{n} \\right) \\sin(nx)";
+            const getCubicTerm = (n) => {
+                let coeff = "";
+                if (n===1) coeff = "(\\pi^2 - 6)";
+                else coeff = `\\left(\\frac{\\pi^2}{${n}} - \\frac{6}{${n}^3}\\right)`;
+                return `${coeff} \\sin ${n}x`;
+            };
+
+            for (let n = 1; n <= Math.min(N, showLimit); n++) {
+                let mag = getCubicTerm(n);
+                let sign = (n % 2 === 1) ? " + " : " - ";
+                terms.push({ sign: sign, latex: mag });
+            }
+            if (N > showLimit) {
+                terms.push({ sign: " + ", latex: "\\cdots" });
+                let mag = getCubicTerm(N);
+                let sign = (N % 2 === 1) ? " + " : " - ";
+                terms.push({ sign: sign, latex: mag });
+            }
+            tex = "f(x) \\approx " + buildFormula("", terms, "\\frac{1}{5}");
         }
 
         mathDiv.innerHTML = `$$ ${tex} $$`;
