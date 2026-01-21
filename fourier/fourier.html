@@ -40,41 +40,52 @@
                     <h2>1. 音と周波数 (基本波) 🔊</h2>
                     <p>
                         最も基本的な波である正弦波（サイン波）は、純粋な音として聞こえます。
-                        周波数 $f$ (Hz) は1秒間の振動回数を表し、これが高くなると音程が高くなります。
+                        振幅 $A$ は音の大きさ、周波数 $f$ (Hz) は音の高さを決定します。
                     </p>
-                    $$ y(t) = \sin(2\pi f t) $$
+                    $$ y(t) = A \sin(2\pi f t) $$
                     
                     <div class="controls-container">
                         <div class="control-group">
                             <label>再生コントロール:</label>
                             <div class="button-row">
-                                <button id="btn-play" class="play-btn">▶ 再生 (Play)</button>
-                                <button id="btn-stop" class="stop-btn">■ 停止 (Stop)</button>
+                                <button id="btn-play" class="play-btn">▶ 再生</button>
+                                <button id="btn-stop" class="stop-btn">■ 停止</button>
                             </div>
-                            <p class="note">※音が出ます。音量にご注意ください。</p>
+                            <p class="note">※音量注意</p>
                         </div>
+                        
                         <div class="control-group" style="flex-grow: 1;">
                             <label>周波数 $f$ (Hz):</label>
                             <div class="slider-row">
                                 <input type="range" id="slider-freq" min="220" max="880" step="1" value="440">
                                 <span id="val-freq">440</span> Hz
                             </div>
+                            
+                            <label style="margin-top:10px;">振幅 $A$ (音量):</label>
+                            <div class="slider-row">
+                                <input type="range" id="slider-amp" min="0" max="1" step="0.01" value="0.5">
+                                <span id="val-amp">0.5</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="canvas-container">
                         <div id="canvas-sound-holder"></div>
-                        <p class="caption">周波数を変えると、波の「細かさ」と「音の高さ」が変わります。</p>
+                        <div class="caption-box">
+                            <strong>なぜ波が動いているの？</strong>
+                            <p>
+                                横軸は空間的な位置 $x$ を表していますが、波の式 $y(t) = A \sin(2\pi f t)$ には時間 $t$ が含まれています。
+                                シミュレーター内では時間を常に進めているため、波の位相（山や谷の位置）が刻一刻と変化し、波が流れているように見えます。
+                                周波数が高いほど、波の形は細かくなり、動きも速く見えます。
+                            </p>
+                        </div>
                     </div>
                 </section>
 
                 <section id="series-demo">
                     <h2>2. 関数のフーリエ級数展開 🌊</h2>
                     <p>
-                        複雑な形をした周期関数も、異なる周波数のサイン波やコサイン波を無限に足し合わせることで表現できます。これを<b>フーリエ級数展開</b>といいます。
-                    </p>
-                    <p>
-                        項数 $N$ を増やす（＝たくさんの波を足す）ほど、元の関数に近づいていく様子を確認しましょう。
+                        複雑な形をした周期関数も、異なる周波数のサイン波やコサイン波を無限に足し合わせることで表現できます。
                     </p>
 
                     <div class="controls-container">
@@ -82,8 +93,10 @@
                             <label for="func-select">ターゲット関数:</label>
                             <select id="func-select">
                                 <option value="square">矩形波 (Square)</option>
-                                <option value="sawtooth">ノコギリ波 (Sawtooth)</option>
-                                <option value="parabola">放物線波 (Parabola)</option>
+                                <option value="sawtooth">ノコギリ波 (x)</option>
+                                <option value="parabola">放物線波 (x²)</option>
+                                <option value="abs_x">絶対値 (|x|)</option>
+                                <option value="cubic">三次関数 (x³)</option>
                             </select>
                         </div>
 

@@ -8,8 +8,8 @@
 const sketchSound = (p) => {
     let osc;
     let playing = false;
-    let freqSlider;
-    let valFreq;
+    let freqSlider, ampSlider;
+    let valFreq, valAmp;
     let btnPlay, btnStop;
     
     // 波形描画用
@@ -21,8 +21,6 @@ const sketchSound = (p) => {
         let h = 200;
         p.createCanvas(w, h);
         
-        // オシレーター初期化 (Sine波)
-        // p5.soundがロードされていない場合の対策
         if (typeof p5.Oscillator === 'undefined') {
             console.error('p5.sound library is not loaded.');
             return;
@@ -33,6 +31,8 @@ const sketchSound = (p) => {
         // UI要素取得
         freqSlider = document.getElementById('slider-freq');
         valFreq = document.getElementById('val-freq');
+        ampSlider = document.getElementById('slider-amp');
+        valAmp = document.getElementById('val-amp');
         btnPlay = document.getElementById('btn-play');
         btnStop = document.getElementById('btn-stop');
 
@@ -40,10 +40,11 @@ const sketchSound = (p) => {
         if (btnPlay) {
             btnPlay.addEventListener('click', () => {
                 if (!playing) {
-                    // ユーザーアクションをトリガーにAudioContextを開始 (重要)
                     p.userStartAudio().then(() => {
                         osc.start();
-                        osc.amp(0.5, 0.1); // 音量0.5へ0.1秒かけてフェードイン
+                        // 現在のスライダー値でフェードイン
+                        let amp = parseFloat(ampSlider.value);
+                        osc.amp(amp, 0.1); 
                         playing = true;
                     });
                 }
@@ -53,7 +54,7 @@ const sketchSound = (p) => {
         if (btnStop) {
             btnStop.addEventListener('click', () => {
                 if (playing) {
-                    osc.amp(0, 0.1); // フェードアウト
+                    osc.amp(0, 0.1); 
                     setTimeout(() => {
                         osc.stop();
                         playing = false;
@@ -62,6 +63,7 @@ const sketchSound = (p) => {
             });
         }
 
+        // 周波数スライダー
         if (freqSlider) {
             freqSlider.addEventListener('input', () => {
                 if (valFreq) valFreq.textContent = freqSlider.value;
@@ -70,31 +72,46 @@ const sketchSound = (p) => {
                 }
             });
         }
+
+        // 振幅スライダー
+        if (ampSlider) {
+            ampSlider.addEventListener('input', () => {
+                let v = parseFloat(ampSlider.value);
+                if (valAmp) valAmp.textContent = v.toFixed(2);
+                if (playing) {
+                    osc.amp(v, 0.1);
+                }
+            });
+        }
     };
 
     p.draw = () => {
         p.background(250);
         
-        // UI要素がまだ取得できていない場合は描画しない
-        if (!freqSlider) return;
+        if (!freqSlider || !ampSlider) return;
 
         let f = parseFloat(freqSlider.value);
+        let a = parseFloat(ampSlider.value);
 
-        // 波形の描画 (音が出ていなくてもイメージとして描画)
+        // 波形の描画
         p.stroke(0);
         p.strokeWeight(2);
         p.noFill();
         p.beginShape();
         
-        // 時間tを進める速度は周波数に比例させる (視覚的にわかりやすく)
         let speed = f * 0.0005; 
         time += speed;
 
+        // 最大振幅を画面の高さの40%程度とする (a=1のとき)
+        let maxH = p.height * 0.4;
+
         for (let x = 0; x < p.width; x++) {
-            // 視覚化用の波形: 振幅50px
-            // 波長も周波数に応じて変える
+            // angle: 画面幅の中で波がいくつか見えるように調整
             let angle = p.map(x, 0, p.width, 0, p.TWO_PI * (f / 50)); 
-            let y = p.height / 2 - Math.sin(angle - time * 10) * 50;
+            
+            // y = center - A * sin(...) 
+            // 振幅スライダー(a)を反映させる
+            let y = p.height / 2 - (a * maxH) * Math.sin(angle - time * 10);
             p.vertex(x, y);
         }
         p.endShape();
@@ -119,13 +136,11 @@ const sketchSeries = (p) => {
     let nSlider, nVal;
     let mathDiv;
 
-    // 状態
     let currentFunc = 'square';
     let N = 1;
 
-    // 定数
-    const SCALE_X = 50; // x軸スケール (1単位 = 50px)
-    const SCALE_Y = 80; // y軸スケール
+    const SCALE_X = 50; 
+    const SCALE_Y = 80;
 
     p.setup = () => {
         let container = document.getElementById('canvas-series-holder');
@@ -160,24 +175,24 @@ const sketchSeries = (p) => {
         p.background(255);
         p.translate(p.width / 2, p.height / 2);
 
-        // 軸の描画
         drawAxes();
 
-        // 1. ターゲット関数（正解）の描画
+        // 1. ターゲット関数
         p.stroke(180);
         p.strokeWeight(4);
         p.noFill();
         p.strokeJoin(p.ROUND);
         p.beginShape();
+        // x範囲を少し広めに取る
         for (let x = -p.width/2; x < p.width/2; x += 2) {
-            let t = x / SCALE_X; // 数学座標のx
+            let t = x / SCALE_X;
             let y = getTargetValue(t);
-            p.vertex(x, -y * SCALE_Y); // p5はy下向きなので反転
+            p.vertex(x, -y * SCALE_Y);
         }
         p.endShape();
 
-        // 2. 近似関数（フーリエ級数）の描画
-        p.stroke('#E65100'); // オレンジ
+        // 2. 近似関数
+        p.stroke('#E65100');
         p.strokeWeight(2);
         p.noFill();
         p.beginShape();
@@ -192,15 +207,11 @@ const sketchSeries = (p) => {
     function drawAxes() {
         p.stroke(0);
         p.strokeWeight(1);
-        // X軸
         p.line(-p.width/2, 0, p.width/2, 0);
-        // Y軸
         p.line(0, -p.height/2, 0, p.height/2);
         
-        // 目盛り (PIごと)
         p.fill(0); p.noStroke(); p.textSize(12); p.textAlign(p.CENTER, p.TOP);
         let piPixels = Math.PI * SCALE_X;
-        // 画面内に収まる範囲で描画
         let maxPi = Math.ceil((p.width/2) / piPixels);
         
         for(let i = -maxPi; i <= maxPi; i++) {
@@ -213,20 +224,23 @@ const sketchSeries = (p) => {
 
     // ターゲット関数の定義 (周期 2PI)
     function getTargetValue(x) {
-        // x を -PI ~ PI の範囲に正規化
+        // -PI ~ PI に正規化
         let phase = (x + Math.PI) % (2 * Math.PI) - Math.PI; 
         if(phase < -Math.PI) phase += 2*Math.PI;
 
         switch (currentFunc) {
             case 'square':
-                // 矩形波: sign(sin(x))
                 return Math.sin(x) >= 0 ? 1 : -1;
             case 'sawtooth':
-                // ノコギリ波: x (ただし -PI < x < PI)
-                return phase / 2; // 振幅を少し抑える
+                return phase / 2; 
             case 'parabola':
-                // 放物線波: x^2 (正規化)
-                return (phase * phase) / 4; // スケール調整
+                return (phase * phase) / 4; 
+            case 'abs_x':
+                // |x|
+                return Math.abs(phase);
+            case 'cubic':
+                // x^3 / 10 (スケール調整)
+                return (phase * phase * phase) / 10;
             default:
                 return 0;
         }
@@ -237,37 +251,63 @@ const sketchSeries = (p) => {
         let sum = 0;
         switch (currentFunc) {
             case 'square':
-                // 4/pi * sum( sin((2n-1)x)/(2n-1) )
                 for (let n = 1; n <= nMax; n++) {
                     let k = 2 * n - 1; 
                     sum += Math.sin(k * x) / k;
                 }
-                sum *= (4 / Math.PI);
-                return sum;
+                return sum * (4 / Math.PI);
 
             case 'sawtooth':
-                // Sawtooth (y=x/2 on [-pi, pi]): sum( (-1)^(n+1) * sin(nx)/n )
                 for (let n = 1; n <= nMax; n++) {
                     let sign = (n % 2 === 1) ? 1 : -1;
                     sum += sign * Math.sin(n * x) / n;
                 }
-                return sum;
+                return sum; // (1/2 scale already in target)
 
             case 'parabola':
-                // Parabola (y=x^2/4 on [-pi, pi]):
-                // a0/2 + sum( an cos nx )
-                // x^2 のフーリエ級数は pi^2/3 + 4 sum (-1)^n cos(nx)/n^2
-                // これを 1/4 倍する
-                
-                // 定数項: (pi^2/3) / 4
-                sum = (Math.PI * Math.PI) / 12;
-                
+                // x^2 on [-pi, pi] => pi^2/3 + 4 sum (-1)^n cos(nx)/n^2
+                // Target is x^2/4, so divide series by 4
+                sum = (Math.PI * Math.PI) / 12; // Const
                 for (let n = 1; n <= nMax; n++) {
                     let sign = (n % 2 === 1) ? -1 : 1; 
-                    sum += (sign * Math.cos(n * x) / (n * n)); // *4 は 1/4で相殺
+                    sum += (sign * Math.cos(n * x) / (n * n));
                 }
                 return sum;
-                
+
+            case 'abs_x':
+                // |x| on [-pi, pi] => pi/2 - 4/pi sum_{odd} cos(nx)/n^2
+                sum = Math.PI / 2;
+                for (let n = 1; n <= nMax; n++) {
+                    let k = 2 * n - 1; // odd only
+                    sum -= (4 / Math.PI) * Math.cos(k * x) / (k * k);
+                }
+                return sum;
+
+            case 'cubic':
+                // x^3 on [-pi, pi] => sum (-1)^n * (12/n^3 - 2pi^2/n) sin(nx)
+                // Target is x^3 / 10
+                // b_n for x^3 is (-1)^n * (2*pi^2*n^2 - 12)/n^3 ? 
+                // Let's use the formula: b_n = 2/pi * int_0^pi x^3 sin(nx) dx
+                // = (-1)^n * 2 * (pi^2/n - 6/n^3)
+                // So series is: sum_{n=1} (-1)^n * 2 * (pi^2/n - 6/n^3) * sin(nx)
+                // Divide by 10 for target match.
+                for (let n = 1; n <= nMax; n++) {
+                    let sign = (n % 2 === 1) ? 1 : -1; // sin(x): n=1 -> +
+                    // Note: formula typically has (-1)^(n) or (-1)^(n+1).
+                    // x^3 starts positive for x>0. sin(x) is positive.
+                    // For n=1: b1 = 2(pi^2 - 6) > 0. sin(x) coeff should be positive.
+                    // Formula check: (-1)^n * ... for n=1 is negative. 
+                    // Usually b_n = (-1)^(n+1) ...
+                    
+                    // Let's compute coefficient value directly:
+                    // bn = (-1)^(n) * 2 * (6/(n^3) - (pi^2)/n)
+                    // if n=1: -1 * 2 * (6 - 9.8) = -2 * -3.8 = +7.6. Correct.
+                    
+                    let coeff = Math.pow(-1, n) * 2 * (6 / Math.pow(n, 3) - (Math.PI * Math.PI) / n);
+                    sum += coeff * Math.sin(n * x);
+                }
+                return sum / 10;
+
             default:
                 return 0;
         }
@@ -280,48 +320,19 @@ const sketchSeries = (p) => {
         let nStr = N > 5 ? "5" : N; 
 
         if (currentFunc === 'square') {
-            tex = "f(x) \\approx \\frac{4}{\\pi} \\left( ";
-            let terms = [];
-            for(let n=1; n<=nStr; n++) {
-                let k = 2*n-1;
-                if(k===1) terms.push("\\sin x");
-                else terms.push(`\\frac{\\sin ${k}x}{${k}}`);
-            }
-            tex += terms.join(" + ");
-            if(N > 5) tex += " + \\dots";
-            tex += " \\right)";
+            tex = "f(x) \\approx \\frac{4}{\\pi} \\sum_{n=1}^{N} \\frac{\\sin((2n-1)x)}{2n-1}";
         } 
         else if (currentFunc === 'sawtooth') {
-            tex = "f(x) \\approx ";
-            let terms = [];
-            for(let n=1; n<=nStr; n++) {
-                let term = "";
-                if(n===1) term = "\\sin x";
-                else term = `\\frac{\\sin ${n}x}{${n}}`;
-                
-                if(n > 1) { 
-                    if(n % 2 === 1) terms.push(" + " + term);
-                    else terms.push(" - " + term);
-                } else {
-                    terms.push(term);
-                }
-            }
-            tex += terms.join("");
-            if(N > 5) tex += " \\dots";
+            tex = "f(x) \\approx \\sum_{n=1}^{N} (-1)^{n+1} \\frac{\\sin(nx)}{n}";
         }
         else if (currentFunc === 'parabola') {
-            tex = "f(x) \\approx \\frac{\\pi^2}{12} + ";
-            let terms = [];
-            for(let n=1; n<=nStr; n++) {
-                let term = "";
-                if(n===1) term = "\\cos x";
-                else term = `\\frac{\\cos ${n}x}{${n*n}}`;
-
-                if(n % 2 === 1) terms.push((n===1 ? "-" : " - ") + term);
-                else terms.push(" + " + term);
-            }
-            tex += terms.join("");
-            if(N > 5) tex += " \\dots";
+            tex = "f(x) \\approx \\frac{\\pi^2}{12} + \\sum_{n=1}^{N} (-1)^{n} \\frac{\\cos(nx)}{n^2}";
+        }
+        else if (currentFunc === 'abs_x') {
+            tex = "f(x) \\approx \\frac{\\pi}{2} - \\frac{4}{\\pi} \\sum_{n=1, odd}^{N} \\frac{\\cos(nx)}{n^2}";
+        }
+        else if (currentFunc === 'cubic') {
+            tex = "f(x) \\approx \\frac{1}{5} \\sum_{n=1}^{N} (-1)^{n} \\left( \\frac{6}{n^3} - \\frac{\\pi^2}{n} \\right) \\sin(nx)";
         }
 
         mathDiv.innerHTML = `$$ ${tex} $$`;
@@ -336,7 +347,6 @@ const sketchSeries = (p) => {
     };
 };
 
-// インスタンスモードでスケッチを起動
 try {
     new p5(sketchSound, 'canvas-sound-holder');
 } catch(e) {
